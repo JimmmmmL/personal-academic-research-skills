@@ -26,6 +26,7 @@ Then ask what mode to use only when the next action is ambiguous:
 - `.pipeline/memory/project_truth.md` stores confirmed facts and decisions.
 - `.pipeline/memory/literature_bank.md` stores human-readable papers.
 - `.pipeline/docs/paper_bank.json` stores machine-readable paper metadata.
+- `.pipeline/docs/paper_digests.md` stores compact deep-reading digests.
 - `.pipeline/memory/experiment_ledger.md` stores experiment configurations and results.
 - `.pipeline/memory/review_log.md` stores review reports and major concerns.
 - `.pipeline/memory/decision_log.md` stores rejected ideas and uncertainty.

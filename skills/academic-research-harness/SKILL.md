@@ -36,7 +36,7 @@ adapt `scripts/init_research_project.mjs`.
 |---|---|---|
 | Start a new research project | `scripts/init_research_project.mjs` | `.pipeline/docs/research_brief.json`, `AGENTS.md` |
 | Find papers, related work, source discovery | `paper-finder` | `literature_bank.md`, `paper_bank.json`, `references.bib` |
-| Deep-read one paper | `paper-deep-note` | `.pipeline/docs/paper_digests.md` |
+| Deep-read one paper | `paper-deep-note` | `.pipeline/docs/paper_digests.md`, `paper_bank.json`, `literature_bank.md` |
 | Analyze gap, decide idea, test novelty | `research-gap-finder` | `.pipeline/docs/gap_matrix.md`, `decision_log.md` |
 | Summarize experiment logs | `experiment-log-summarizer` | `experiment_ledger.md`, `result_summary.md` |
 | Write ML/AI paper sections | `paper-writing` | `paper/` or `sections/`, `result_summary.md` |

@@ -30,6 +30,7 @@ writeJsonIfMissing(".pipeline/docs/paper_bank.json", {
   version: 1,
   papers: []
 });
+writeIfMissing(".pipeline/docs/paper_digests.md", "# Paper Digests\n\n");
 
 writeJsonIfMissing(".pipeline/tasks/tasks.json", {
   version: 1,

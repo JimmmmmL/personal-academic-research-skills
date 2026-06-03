@@ -161,6 +161,9 @@ paper-finder -> paper-deep-note -> research-gap-finder -> decision_log
 ```
 
 The goal is to distinguish real gaps from gaps caused by incomplete reading.
+Deep-reading notes are synchronized to `.pipeline/docs/paper_digests.md`; the
+same paper's machine-readable status and analysis summary are merged into
+`.pipeline/docs/paper_bank.json`.
 
 ### 3. Experiments
 
