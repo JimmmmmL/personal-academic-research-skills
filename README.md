@@ -72,7 +72,13 @@ git clone <this-repo-url> personal-academic-research-skills
 ```
 
 If your Codex setup expects skills under a specific directory, copy or symlink
-the subdirectories under `skills/` into that directory. For local development,
+the subdirectories under `skills/` into that directory. 
+
+```bash
+cp -r personal-academic-research-skills/skills/* ~/.codex/skills/
+```
+
+For local development,
 you can also keep this repo as a standalone skill source and reference paths
 from your Codex configuration.
 
