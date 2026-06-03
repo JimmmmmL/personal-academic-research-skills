@@ -164,6 +164,9 @@ The goal is to distinguish real gaps from gaps caused by incomplete reading.
 Deep-reading notes are synchronized to `.pipeline/docs/paper_digests.md`; the
 same paper's machine-readable status and analysis summary are merged into
 `.pipeline/docs/paper_bank.json`.
+`research-gap-finder` should then use these files as evidence, build a coverage
+map, rank candidate gaps by novelty threat and feasibility, and write the result
+to `.pipeline/docs/gap_matrix.md` plus `.pipeline/memory/decision_log.md`.
 
 ### 3. Experiments
 

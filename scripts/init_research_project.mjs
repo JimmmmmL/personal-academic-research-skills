@@ -31,6 +31,7 @@ writeJsonIfMissing(".pipeline/docs/paper_bank.json", {
   papers: []
 });
 writeIfMissing(".pipeline/docs/paper_digests.md", "# Paper Digests\n\n");
+writeIfMissing(".pipeline/docs/gap_matrix.md", "# Gap Matrix\n\n");
 
 writeJsonIfMissing(".pipeline/tasks/tasks.json", {
   version: 1,

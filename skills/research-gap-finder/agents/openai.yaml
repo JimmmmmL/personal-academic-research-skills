@@ -1,6 +1,6 @@
 display_name: Research Gap Finder
-short_description: Analyze topic coverage and surface grounded research gaps.
+short_description: Find evidence-grounded gaps and candidate ideas from deep-read papers.
 default_prompt: >-
-  Map what a topic already covers, identify bottlenecks and controversies, and
-  suggest grounded research gaps, entry points, and validation ideas without
-  forcing novelty claims.
+  Read the project's paper_bank, paper_digests, and literature memory, then map
+  coverage, identify evidence-grounded research gaps, score candidate ideas by
+  novelty threat and feasibility, and update gap_matrix and decision_log.
