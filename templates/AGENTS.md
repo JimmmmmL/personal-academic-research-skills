@@ -32,6 +32,8 @@ Then ask what mode to use only when the next action is ambiguous:
 - `.pipeline/memory/review_log.md` stores review reports and major concerns.
 - `.pipeline/memory/decision_log.md` stores rejected ideas and uncertainty.
 - `.pipeline/memory/agent_handoff.md` stores what the next phase needs.
+- `literature/<topic-name>/` stores topic-specific search outputs,
+  summaries, discussions, PDFs, and topic-level BibTeX.
 
 Do not fabricate citations, benchmark results, experiment outcomes, or venue
 rules. Mark unverified items explicitly.

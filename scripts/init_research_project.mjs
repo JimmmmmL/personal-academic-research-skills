@@ -14,6 +14,7 @@ mkdir(".pipeline/docs");
 mkdir(".pipeline/memory");
 mkdir(".pipeline/tasks");
 mkdir(".pipeline/.events");
+mkdir("literature");
 mkdir("paper");
 mkdir("figures");
 

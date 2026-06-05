@@ -88,14 +88,19 @@ Allowed `status`: `discovered`, `candidate`, `summarized`, `analyzed`, `accepted
 If the paper came from a `paper-finder` topic folder, also maintain that folder:
 
 ```
-<topic-name>/
+literature/<topic-name>/
   memory-bank.md
   mind-graph.md
   summaries/<short-id>.md
   references.bib
 ```
 
-Save the detailed note to `summaries/<short-id>.md` when the folder exists or the user asks for per-paper files. Update `memory-bank.md` status to `summarized` or `analyzed`. Update `mind-graph.md` only with topic-level relationships, not noisy pairwise comparisons.
+Save the detailed note to `literature/<topic-name>/summaries/<short-id>.md`
+when the folder exists or the user asks for per-paper files. Update
+`memory-bank.md` status to `summarized` or `analyzed`. Update `mind-graph.md`
+only with topic-level relationships, not noisy pairwise comparisons. If the
+user explicitly points to an older root-level topic folder, use that folder for
+compatibility.
 
 ## Output Rules
 

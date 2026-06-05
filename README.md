@@ -45,6 +45,10 @@ personal-academic-research-skills/
     └── external-skill-index.md
 ```
 
+Inside each initialized research project, literature-search artifacts live under
+`literature/<topic-name>/`, while cross-topic project memory stays in
+`.pipeline/`.
+
 ## Core Skill Routing
 
 | User intent | Skill |
@@ -109,7 +113,9 @@ The script creates:
 .pipeline/
 ├── docs/
 │   ├── research_brief.json
-│   └── paper_bank.json
+│   ├── paper_bank.json
+│   ├── paper_digests.md
+│   └── gap_matrix.md
 ├── memory/
 │   ├── project_truth.md
 │   ├── literature_bank.md
@@ -120,6 +126,7 @@ The script creates:
 │   └── execution_context.md
 └── tasks/
     └── tasks.json
+literature/
 AGENTS.md
 ```
 
@@ -149,6 +156,7 @@ Ask for related work or paper search. `paper-finder` will:
   search angles;
 - record papers in `.pipeline/memory/literature_bank.md`;
 - maintain machine-readable metadata in `.pipeline/docs/paper_bank.json`;
+- create or update topic-specific folders under `literature/<topic-name>/`;
 - update `references.bib` when citation material is verified.
 
 ### 2. Paper Reading And Gap Analysis

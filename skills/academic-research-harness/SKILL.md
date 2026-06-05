@@ -72,6 +72,12 @@ The canonical project state is:
     decision_log.md
   tasks/
     tasks.json
+literature/
+  <topic-name>/
+    memory-bank.md
+    mind-graph.md
+    summaries/
+    references.bib
 ```
 
 Use `project_truth.md` for confirmed facts and decisions only. Use

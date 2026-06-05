@@ -32,25 +32,27 @@ explicitly search the current and previous 2-3 years, plus arXiv/OpenReview.
 
 ## Directory Structure
 
-Each search/topic gets its own folder. The folder name should be a short,
-descriptive kebab-case name for the search topic (e.g.,
+Each search/topic gets its own folder under `literature/`. The topic folder name
+should be a short, descriptive kebab-case name for the search topic (e.g.,
 `mixed-resolution-diffusion/`, `video-generation-efficiency/`). The user may
 also specify a custom folder name. Create on first use:
 
 ```
-<topic-name>/
-  memory-bank.md        # Master list of all discovered papers
-  mind-graph.md         # Topic-paper connection graph
-  summaries/            # Per-paper .md files (via research-paper-analyst skill)
-  references.bib        # Combined BibTeX for all papers
-  pdfs/                 # Downloaded PDFs (only when user asks)
-  discussions/          # Paper comparison logs
+literature/
+  <topic-name>/
+    memory-bank.md        # Master list of all discovered papers for this topic
+    mind-graph.md         # Topic-paper connection graph
+    summaries/            # Per-paper .md files via paper-deep-note
+    references.bib        # Topic-level BibTeX for this search
+    pdfs/                 # Downloaded PDFs (only when user asks)
+    discussions/          # Paper comparison logs
 ```
 
 If the user references an existing folder (e.g.,
-`@mixed-resolution-diffusion/`), operate within that folder. If starting a new
-search without a specified folder, derive a descriptive name from the search
-query.
+`@literature/mixed-resolution-diffusion/` or an older
+`@mixed-resolution-diffusion/` folder), operate within that folder. If starting
+a new search without a specified folder, derive a descriptive name from the
+search query and create it under `literature/`.
 
 ## Searching for Papers
 
@@ -185,7 +187,8 @@ Read existing memory before searching to avoid duplicates:
 .pipeline/memory/decision_log.md
 ```
 
-In project mode, still create or update the topic folder. Also synchronize
+In project mode, still create or update the `literature/<topic-name>/` folder.
+Also synchronize
 accepted or candidate discoveries to:
 
 ```
@@ -280,16 +283,16 @@ Write a single combined `references.bib` file with all papers. Use
 preprints. Citation key = short-id.
 
 In project pipeline mode, prefer the project-level `references.bib` at the repo
-root. If a topic folder also has `references.bib`, keep it synchronized with the
-project-level file and avoid duplicate keys.
+root. If `literature/<topic-name>/references.bib` also exists, keep it
+synchronized with the project-level file and avoid duplicate keys.
 
 ## Paper Summaries and Comparisons
 
 - **Summaries**: Invoke `paper-deep-note` or a research-paper analyst skill.
-  Save to `summaries/<short-id>.md`. Only when user explicitly asks — do not
-  auto-summarize.
+  Save to `literature/<topic-name>/summaries/<short-id>.md`. Only when user
+  explicitly asks — do not auto-summarize.
 - **Comparisons**: Read existing summaries first; save discussion to
-  `discussions/<descriptive-name>.md`.
+  `literature/<topic-name>/discussions/<descriptive-name>.md`.
 - **References to known papers**: Search summaries and memory bank first. Only
   re-read the original paper if the user explicitly asks.
 
@@ -301,7 +304,8 @@ Do NOT download PDFs unless the user explicitly asks. When asked:
    This is the canonical source. Do not read memory-bank.md or other files just
    to find download URLs.
 2. Construct the PDF URL from the arXiv ID: `https://arxiv.org/pdf/<eprint-id>`.
-3. Download via curl/WebFetch and save to `pdfs/<short-id>.pdf`.
+3. Download via curl/WebFetch and save to
+   `literature/<topic-name>/pdfs/<short-id>.pdf`.
 4. Only fall back to memory-bank.md or web search if a paper has no entry in
    references.bib.
 
@@ -310,7 +314,8 @@ Do NOT download PDFs unless the user explicitly asks. When asked:
 1. **Search**: Run direct, multi-angle, venue/index-specific, and citation-graph
    searches. Present a ranked list with title, venue, year, citations, URL, and
    one-line relevance.
-2. **Record**: Add papers to `memory-bank.md`, update `mind-graph.md`, write
-   `references.bib`; in project mode also update
+2. **Record**: Add papers to `literature/<topic-name>/memory-bank.md`, update
+   `literature/<topic-name>/mind-graph.md`, write topic-level
+   `literature/<topic-name>/references.bib`; in project mode also update
    `.pipeline/memory/literature_bank.md` and `.pipeline/docs/paper_bank.json`.
 3. **Ask**: Whether the user wants deeper analysis of any specific papers.
