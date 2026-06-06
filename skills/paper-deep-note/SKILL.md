@@ -14,6 +14,7 @@ description: Produce a precise Chinese deep-reading note for a single academic p
 - 如果没有全文，不要评价公式细节、完整实验设置、消融充分性或复现难点的细枝末节。
 - 不要把作者 claim 改写成事实；用 claim-evidence 表明确证据来源。
 - 精读必须服务项目：这篇论文能作为 baseline、related work、方法组件、反例、评测参考，还是可以暂缓。
+- 默认加入一个直觉讲解 section：用非常生动、低门槛的方式解释论文想法，但不要为了好懂而扭曲技术含义。
 
 ## Core Workflow
 
@@ -39,6 +40,7 @@ For fulltext or strong excerpts, cover:
 - Claim-evidence alignment: major claims, the specific table/figure/section supporting each claim, and whether support is strong or weak.
 - Related-work positioning: what line of work it belongs to, 2-5 neighboring papers or categories, and what it changes relative to them.
 - Project value: whether this paper affects the user's hypothesis, experiment plan, baseline choice, survey taxonomy, or paper framing.
+- Intuitive explanation: explain the core idea like teaching a beginner, using vivid analogies, step-by-step causal logic, and minimal jargon; then map the analogy back to the actual technical components.
 
 For abstract-only or metadata-only inputs, still output a useful screening card, but mark method and experiment conclusions as provisional.
 
@@ -105,6 +107,7 @@ compatibility.
 ## Output Rules
 
 - Default response: a concise top summary plus the full Chinese deep note.
+- Always include `## 直觉版讲解：像给刚入门同学讲` unless the user explicitly asks for a terse or machine-readable output.
 - For project mode: mention which project memory files were updated.
 - For quick screening: keep the same headings but shorten each section.
 - In “是否值得精读”, use only:

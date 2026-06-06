@@ -2,5 +2,6 @@ display_name: Paper Deep Note
 short_description: Deep-read one paper, check claims against evidence, and sync project memory.
 default_prompt: >-
   Analyze one academic paper into a precise Chinese deep-reading note with
-  method breakdown, claim-evidence checking, experiment credibility,
-  reproduction risks, project relevance, and .pipeline memory updates.
+  an intuitive beginner-friendly explanation, method breakdown,
+  claim-evidence checking, experiment credibility, reproduction risks, project
+  relevance, and .pipeline memory updates.
