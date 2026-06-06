@@ -28,6 +28,8 @@ Then ask what mode to use only when the next action is ambiguous:
 - `.pipeline/docs/paper_bank.json` stores machine-readable paper metadata.
 - `.pipeline/docs/paper_digests.md` stores compact deep-reading digests.
 - `.pipeline/docs/gap_matrix.md` stores evidence-grounded gaps and candidate ideas.
+- `.pipeline/docs/weekly_update.md` stores the latest lab update.
+- `.pipeline/docs/weekly_updates/` stores dated weekly update archives.
 - `.pipeline/memory/experiment_ledger.md` stores experiment configurations and results.
 - `.pipeline/memory/review_log.md` stores review reports and major concerns.
 - `.pipeline/memory/decision_log.md` stores rejected ideas and uncertainty.

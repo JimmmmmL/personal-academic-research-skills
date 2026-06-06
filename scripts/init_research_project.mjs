@@ -14,6 +14,7 @@ mkdir(".pipeline/docs");
 mkdir(".pipeline/memory");
 mkdir(".pipeline/tasks");
 mkdir(".pipeline/.events");
+mkdir(".pipeline/docs/weekly_updates");
 mkdir("literature");
 mkdir("paper");
 mkdir("figures");
@@ -33,6 +34,7 @@ writeJsonIfMissing(".pipeline/docs/paper_bank.json", {
 });
 writeIfMissing(".pipeline/docs/paper_digests.md", "# Paper Digests\n\n");
 writeIfMissing(".pipeline/docs/gap_matrix.md", "# Gap Matrix\n\n");
+writeIfMissing(".pipeline/docs/weekly_update.md", "# Weekly Update\n\n");
 
 writeJsonIfMissing(".pipeline/tasks/tasks.json", {
   version: 1,

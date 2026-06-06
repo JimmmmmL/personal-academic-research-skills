@@ -3,26 +3,37 @@
 ```markdown
 # Weekly Research Brief
 
-## Main Progress
+## One-line Update
+- Main change:
+- Current project stage:
 
-## Paper Reading
-- Topic:
-- Key papers:
-- Main takeaway:
+## Evidence-backed Progress
+- Literature:
+- Experiments:
+- Idea / gap:
+- Writing / review:
 
-## Experiment Update
-- What changed:
-- Main result:
-- Current best setup:
+## Confirmed Takeaways
+-
+-
 
-## Current Issues
+## Preliminary Hypotheses
+-
+-
 
-## Plan for Next Week
+## Blockers
+-
 
-## Questions for Discussion
+## Next Week Deliverables
+-
+-
+
+## Questions
+-
 ```
 
 ## Usage Notes
 
 - Keep the English version short and readable.
 - Focus on outcomes, blockers, and next actions instead of detailed logs.
+- Do not translate every detail from the Chinese report; summarize the signal.

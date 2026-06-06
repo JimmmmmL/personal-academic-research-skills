@@ -44,7 +44,7 @@ adapt `scripts/init_research_project.mjs`.
 | Create Figure 1, architecture diagrams, plots | `academic-plotting` | `figures/`, `paper/figures/`, or `assets/figures/` |
 | Simulate peer review | `paper-reviewer` | `review_log.md` |
 | Draft rebuttal from reviewer comments | `review-rebuttal` | `.pipeline/docs/rebuttal_draft.md` |
-| Weekly lab update | `weekly-lab-update` | `.pipeline/docs/weekly_update.md` |
+| Weekly lab update | `weekly-lab-update` | `.pipeline/docs/weekly_update.md`, `.pipeline/docs/weekly_updates/`, `agent_handoff.md` |
 
 For ML/AI implementation tasks outside this repo, consult
 `references/external-skill-index.md` and read only the matched external skill.
@@ -61,6 +61,8 @@ The canonical project state is:
     gap_matrix.md
     paper_digests.md
     result_summary.md
+    weekly_update.md
+    weekly_updates/
   memory/
     project_truth.md
     orchestrator_state.md

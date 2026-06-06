@@ -1,5 +1,8 @@
 display_name: Weekly Lab Update
-short_description: Turn weekly research activity into a concise lab-facing update.
+short_description: Summarize pipeline changes into a lab-facing weekly update.
 default_prompt: >-
-  Convert a week's paper reading, experiments, blockers, and next steps into a
-  concise Chinese weekly report, a meeting outline, or an English brief.
+  Read the project's pipeline memory, identify whether the week was
+  literature-heavy, experiment-heavy, idea-shift, writing-heavy, review-focused,
+  mixed, or blocked, then produce a concise Chinese weekly report, meeting
+  outline, or English brief with confirmed takeaways, tentative hypotheses,
+  blockers, and next-week deliverables.

@@ -115,7 +115,9 @@ The script creates:
 │   ├── research_brief.json
 │   ├── paper_bank.json
 │   ├── paper_digests.md
-│   └── gap_matrix.md
+│   ├── gap_matrix.md
+│   ├── weekly_update.md
+│   └── weekly_updates/
 ├── memory/
 │   ├── project_truth.md
 │   ├── literature_bank.md
@@ -223,6 +225,14 @@ paper prose.
 Before submission, use `paper-reviewer` for a harsh reviewer-style pass. After
 real reviews arrive, use `review-rebuttal` to classify concerns and draft a
 professional response without inventing missing experiments.
+
+### 7. Weekly Lab Update
+
+Use `weekly-lab-update` near the end of a week or before group meeting. It reads
+the current `.pipeline/` state, identifies whether the week was literature-heavy,
+experiment-heavy, idea-shift, writing-heavy, review-focused, mixed, or blocked,
+then writes the latest update to `.pipeline/docs/weekly_update.md` and archives
+dated copies under `.pipeline/docs/weekly_updates/`.
 
 ## Using AI-Research-SKILLs
 

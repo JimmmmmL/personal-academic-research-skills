@@ -1,11 +1,11 @@
 ---
 name: weekly-lab-update
-description: turn a week's paper reading, experiment progress, debugging notes, and next-step plans into a chinese weekly report, a chinese group-meeting outline, or an english brief when the user needs a concise lab update instead of a raw activity log.
+description: Generate a pipeline-aware weekly academic research update from a .pipeline project repo, paper reading notes, experiment ledger, result summaries, gap matrix, decision log, task state, or user notes. Use when the user needs a Chinese weekly report, Chinese group-meeting outline, English brief, lab update, progress summary, next-week plan, or a concise explanation of what changed across literature review, experiments, idea shifts, writing, review, or blockers.
 ---
 
 # Weekly Lab Update
 
-用这个 skill 把一周内的论文阅读、实验结果、失败排查和下周计划整理成周报、组会提纲和英文简版汇报。重点是突出结论、变化和待讨论问题，而不是记录流水账。
+用这个 skill 把 `.pipeline/` 里的项目状态和用户补充笔记整理成周报、组会提纲和英文简版汇报。重点不是流水账，而是回答：本周项目发生了什么变化，哪些结论已经确认，哪些只是初步假设，下周要交付什么，以及需要讨论什么。
 
 ## 输出模式
 
@@ -15,36 +15,86 @@ description: turn a week's paper reading, experiment progress, debugging notes, 
 
 如果用户没有指定，默认输出中文周报，并附一版简短组会提纲。
 
-## 工作流
+## Pipeline Reading Strategy
 
-1. 先按“论文阅读”“实验进展”“当前问题”“下周计划”整理输入。
-2. 参考 `references/weekly_report_template.md` 生成中文周报。
-3. 参考 `references/meeting_outline_template.md` 生成中文组会提纲。
-4. 在需要英文短汇报时，参考 `references/english_brief_template.md`。
+If `.pipeline/` exists, default to project mode. Read these first:
 
-## 输入处理规则
+```
+.pipeline/docs/research_brief.json
+.pipeline/memory/project_truth.md
+.pipeline/memory/agent_handoff.md
+.pipeline/tasks/tasks.json
+```
 
-- 接收本周读过的论文、本周实验结果、当前问题和下周计划。
-- 如果输入更像碎片笔记，先归并同类项，再提炼结论。
-- 如果一周内进展较少，也不要硬凑内容，明确写清当前卡点和需要讨论的问题。
+Then read phase-specific files only when needed:
 
-## 输出规则
+| Weekly focus | Read |
+|---|---|
+| Literature-heavy | `.pipeline/memory/literature_bank.md`, `.pipeline/docs/paper_bank.json`, `.pipeline/docs/paper_digests.md`, `literature/*/memory-bank.md` if needed |
+| Experiment-heavy | `.pipeline/memory/experiment_ledger.md`, `.pipeline/docs/result_summary.md` |
+| Idea-shift / gap | `.pipeline/docs/gap_matrix.md`, `.pipeline/memory/decision_log.md` |
+| Writing-heavy | `paper/`, `sections/`, `.pipeline/docs/result_summary.md`, `.pipeline/memory/decision_log.md` |
+| Review / rebuttal | `.pipeline/memory/review_log.md`, `.pipeline/docs/rebuttal_draft.md` |
 
-- 默认结构包括：
-  - 本周进展
-  - 论文阅读总结
-  - 实验结果总结
-  - 当前问题
-  - 下周计划
-  - 希望讨论的问题
-- 不要写成按时间排序的流水账。
-- 优先写“发生了什么变化、为什么重要、接下来怎么处理”。
+If the user provides notes, merge them with pipeline evidence. User notes can
+explain intent and priorities, but do not override file-backed results unless
+the user explicitly says the files are stale.
 
-## 证据与表述约束
+## Weekly Focus Classification
 
-- 不要夸大进展。
-- 如果某些结论只是初步观察，直接标注“初步”或“待验证”。
-- 如果实验失败较多，也要把失败经验整理成可讨论信息。
+Classify the week before writing:
+
+- `literature-heavy`: many papers found, screened, or deep-read; taxonomy or related-work understanding changed.
+- `experiment-heavy`: runs, ablations, debugging, metrics, or implementation changed.
+- `idea-shift`: gap, hypothesis, problem framing, or direction changed.
+- `writing-heavy`: sections, figures, tables, citations, or draft structure changed.
+- `review-rebuttal`: review analysis, rebuttal strategy, or camera-ready changes dominate.
+- `mixed`: multiple streams made meaningful progress.
+- `low-activity`: limited progress; focus on blockers and recovery plan.
+
+The update should be organized around the focus, not around a fixed chronology.
+
+## Core Workflow
+
+1. Determine the date/week range. If unspecified, use the current date and label it as the current weekly update.
+2. Read project memory as described above.
+3. Extract changes, not raw activity:
+   - new confirmed facts;
+   - new or rejected hypotheses;
+   - paper-reading takeaways that changed the project;
+   - experiment result deltas and current best setup;
+   - idea/gap changes and why;
+   - blockers and decisions needed.
+4. Mark each important statement as one of:
+   - `confirmed`: backed by project files, logs, papers, or user confirmation.
+   - `preliminary`: plausible but needs another paper search, run, or ablation.
+   - `blocked`: cannot progress without data, compute, code, decision, or clarification.
+5. Read the relevant output templates:
+   - `references/weekly_report_template.md` for Chinese weekly reports.
+   - `references/meeting_outline_template.md` for group-meeting outlines.
+   - `references/english_brief_template.md` for English briefs.
+6. Write the output. In project mode, save the latest update to `.pipeline/docs/weekly_update.md` and archive a dated copy under `.pipeline/docs/weekly_updates/YYYY-MM-DD.md` unless the user asked for chat-only output.
+7. Update `.pipeline/memory/agent_handoff.md` with the next-week action summary when the update includes next steps.
+
+## Output Rules
+
+- Default: Chinese weekly report plus a short Chinese meeting outline.
+- If the user asks for English, keep it short and lab-readable; do not translate the entire Chinese report mechanically.
+- Do not write a daily timeline unless requested.
+- Emphasize “what changed, why it matters, what evidence supports it, and what comes next.”
+- Next-week plans must be checkable deliverables, not vague intentions.
+- If progress is small, say so directly and make blockers/action recovery clear.
+- If experiments failed, summarize what they ruled out or exposed.
+- If reading dominated the week, summarize taxonomy/gap/baseline changes instead of listing every paper.
+- If the idea changed, explain old direction, new direction, reason for change, and missing evidence.
+
+## Evidence Constraints
+
+- Do not inflate progress or invent results.
+- Do not claim a paper was read, a result improved, or an idea was selected unless backed by project files or user notes.
+- Mark tentative interpretations as `初步` or `待验证`.
+- Separate “导师需要知道的结论” from “自己还在猜的解释”.
+- If date filtering is impossible from the files, state that the update is based on current project state plus available dated entries.
 
 ## 何时读引用文件
 
