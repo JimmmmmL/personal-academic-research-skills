@@ -13,9 +13,8 @@ the specialized skill or reference file needed for the current task.
 
 - Oh-my-paper style project memory: `.pipeline/`, staged research workflow,
   task state, literature bank, experiment ledger, review log, and handoff notes.
-- Personal lightweight research skills: paper finding, deep reading notes, gap
-  analysis, benchmark extraction, experiment summaries, surveys, weekly reports,
-  and rebuttals.
+- Personal lightweight research skills: paper finding, concise paper notes, gap
+  analysis, benchmark extraction, experiment summaries, surveys, and rebuttals.
 - Selected AI-Research-SKILLs writing components: ML paper writing, systems
   paper writing, and academic plotting, with long guidance moved behind
   references.
@@ -49,13 +48,60 @@ Inside each initialized research project, literature-search artifacts live under
 `literature/<topic-name>/`, while cross-topic project memory stays in
 `.pipeline/`.
 
+## Recommended Project Topology
+
+Use one project repo as the research control plane, plus external experiment
+repos for large codebases:
+
+```text
+my-paper-project/
+├── AGENTS.md
+├── .pipeline/
+│   ├── docs/
+│   │   ├── research_brief.json
+│   │   ├── paper_bank.json
+│   │   ├── paper_notes.md
+│   │   ├── gap_matrix.md
+│   │   ├── selected_idea.md
+│   │   ├── experiment_repos.md
+│   │   └── result_summary.md
+│   └── memory/
+│       ├── literature_bank.md
+│       ├── experiment_ledger.md
+│       └── decision_log.md
+├── literature/
+├── results/
+├── paper/
+└── figures/
+
+external-training-repo/
+├── training code
+├── configs
+├── raw logs
+└── checkpoints
+```
+
+The project repo should be small enough to open in Codex and publish on GitHub.
+Keep training code, datasets, checkpoints, raw logs, and caches in external
+experiment repos. Sync only the research evidence needed for decisions and
+writing:
+
+- external repo entry: `.pipeline/docs/experiment_repos.md`
+- run-level facts: `.pipeline/memory/experiment_ledger.md`
+- compact result story: `.pipeline/docs/result_summary.md`
+- lightweight copied artifacts: `results/`
+
+This avoids context pollution without making repo communication complicated.
+Codex reads `.pipeline/` first, then opens a specific literature topic, result
+artifact, paper section, or external repo commit only when the user asks.
+
 ## Core Skill Routing
 
 | User intent | Skill |
 |---|---|
 | Start or resume a research project | `academic-research-harness` |
 | Find papers / related work | `paper-finder` |
-| Read one paper deeply | `paper-deep-note` |
+| Make a concise note for one paper | `paper-note` |
 | Analyze gaps or refine ideas | `research-gap-finder` |
 | Extract benchmark tables | `benchmark-extractor` |
 | Summarize experiment logs | `experiment-log-summarizer` |
@@ -65,7 +111,6 @@ Inside each initialized research project, literature-search artifacts live under
 | Create figures and plots | `academic-plotting` |
 | Simulate reviewer feedback | `paper-reviewer` |
 | Draft rebuttal | `review-rebuttal` |
-| Prepare weekly lab update | `weekly-lab-update` |
 
 ## Installation
 
@@ -114,10 +159,11 @@ The script creates:
 ├── docs/
 │   ├── research_brief.json
 │   ├── paper_bank.json
-│   ├── paper_digests.md
+│   ├── paper_notes.md
 │   ├── gap_matrix.md
-│   ├── weekly_update.md
-│   └── weekly_updates/
+│   ├── selected_idea.md
+│   ├── experiment_repos.md
+│   └── result_summary.md
 ├── memory/
 │   ├── project_truth.md
 │   ├── literature_bank.md
@@ -129,6 +175,9 @@ The script creates:
 └── tasks/
     └── tasks.json
 literature/
+results/
+paper/
+figures/
 AGENTS.md
 ```
 
@@ -163,31 +212,52 @@ Ask for related work or paper search. `paper-finder` will:
 
 ### 2. Paper Reading And Gap Analysis
 
-Use `paper-deep-note` for single-paper reading cards. Use
+Use `paper-note` for concise single-paper notes. Use
 `research-gap-finder` after enough papers are collected. The intended flow is:
 
 ```text
-paper-finder -> paper-deep-note -> research-gap-finder -> decision_log
+paper-finder -> paper-note -> research-gap-finder -> decision_log
 ```
 
 The goal is to distinguish real gaps from gaps caused by incomplete reading.
-Deep-reading notes are synchronized to `.pipeline/docs/paper_digests.md`; the
-same paper's machine-readable status and analysis summary are merged into
+Paper notes are synchronized to `.pipeline/docs/paper_notes.md`; the same
+paper's machine-readable status and short insight summary are merged into
 `.pipeline/docs/paper_bank.json`.
-`research-gap-finder` should then use these files as evidence, build a coverage
-map, rank candidate gaps by novelty threat and feasibility, and write the result
-to `.pipeline/docs/gap_matrix.md` plus `.pipeline/memory/decision_log.md`.
+`research-gap-finder` then uses these files as evidence to summarize the
+landscape, propose 2-4 candidate directions, flag missing evidence, and ask the
+user whether to choose a direction, combine directions, or run `paper-finder`
+for targeted follow-up. After user selection, it writes the result to
+`.pipeline/docs/selected_idea.md`, `.pipeline/docs/gap_matrix.md`, and
+`.pipeline/memory/decision_log.md`.
 
 ### 3. Experiments
 
-Record runs in `.pipeline/memory/experiment_ledger.md`. When logs become messy,
-use `experiment-log-summarizer` to produce:
+For most research projects, keep the experiment implementation in a separate
+repo. In the project repo, first register it in
+`.pipeline/docs/experiment_repos.md`:
+
+```markdown
+| Alias | Repo | Role | Branch / Commit | Last Synced | Notes |
+|---|---|---|---|---|---|
+| main-exp | <github-or-relative-repo> | training and evaluation | main / abc1234 | 2026-06-07 | primary codebase |
+```
+
+Then record meaningful runs in `.pipeline/memory/experiment_ledger.md`. Each
+entry should include the external repo alias, commit/hash, config, metric,
+result, and any lightweight artifact saved under `results/`.
+
+When logs become messy, use `experiment-log-summarizer` to produce:
 
 - confirmed results;
 - possible explanations marked as hypotheses;
 - current best configuration;
 - failed runs and what they rule out;
-- next experiment suggestions.
+- next experiment suggestions;
+- ledger entries and a compact `.pipeline/docs/result_summary.md` update.
+
+Do not copy large checkpoints, datasets, full raw logs, or generated caches into
+the project repo unless there is a specific reason. Prefer links, commit hashes,
+small CSV/JSON summaries, selected log excerpts, and final result tables.
 
 ### 4. Paper Writing
 
@@ -226,13 +296,10 @@ Before submission, use `paper-reviewer` for a harsh reviewer-style pass. After
 real reviews arrive, use `review-rebuttal` to classify concerns and draft a
 professional response without inventing missing experiments.
 
-### 7. Weekly Lab Update
-
-Use `weekly-lab-update` near the end of a week or before group meeting. It reads
-the current `.pipeline/` state, identifies whether the week was literature-heavy,
-experiment-heavy, idea-shift, writing-heavy, review-focused, mixed, or blocked,
-then writes the latest update to `.pipeline/docs/weekly_update.md` and archives
-dated copies under `.pipeline/docs/weekly_updates/`.
+Weekly or meeting updates are handled on demand in the interactive session:
+ask Codex to summarize the current `.pipeline/` state, experiment ledger,
+paper notes, or decision log into the format you need. There is no separate
+weekly skill or persistent weekly-report artifact.
 
 ## Using AI-Research-SKILLs
 

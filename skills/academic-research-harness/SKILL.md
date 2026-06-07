@@ -1,6 +1,6 @@
 ---
 name: academic-research-harness
-description: Personal academic research project harness for Codex. Use when starting or resuming a research project, coordinating literature search, gap analysis, experiments, paper writing, review, rebuttal, or weekly research updates through a .pipeline memory structure. Routes to paper-finder, paper-deep-note, research-gap-finder, experiment-log-summarizer, paper-writing, academic-plotting, survey-writer, paper-reviewer, and review-rebuttal instead of doing every task inline.
+description: Personal academic research project harness for Codex. Use when starting or resuming a research project, coordinating literature search, paper notes, gap analysis, experiments, paper writing, review, or rebuttal through a .pipeline memory structure. Routes to paper-finder, paper-note, research-gap-finder, experiment-log-summarizer, paper-writing, academic-plotting, survey-writer, paper-reviewer, and review-rebuttal instead of doing every task inline.
 metadata:
   version: "0.1.0"
 ---
@@ -36,15 +36,14 @@ adapt `scripts/init_research_project.mjs`.
 |---|---|---|
 | Start a new research project | `scripts/init_research_project.mjs` | `.pipeline/docs/research_brief.json`, `AGENTS.md` |
 | Find papers, related work, source discovery | `paper-finder` | `literature_bank.md`, `paper_bank.json`, `references.bib` |
-| Deep-read one paper | `paper-deep-note` | `.pipeline/docs/paper_digests.md`, `paper_bank.json`, `literature_bank.md` |
-| Analyze gap, decide idea, test novelty | `research-gap-finder` | `.pipeline/docs/gap_matrix.md`, `decision_log.md`, `agent_handoff.md` |
-| Summarize experiment logs | `experiment-log-summarizer` | `experiment_ledger.md`, `result_summary.md` |
+| Make a concise note for one paper | `paper-note` | `.pipeline/docs/paper_notes.md`, `paper_bank.json`, `literature_bank.md` |
+| Analyze gap, decide idea, test novelty | `research-gap-finder` | `.pipeline/docs/gap_matrix.md`, `.pipeline/docs/selected_idea.md`, `decision_log.md`, `agent_handoff.md` |
+| Summarize experiment logs or external experiment results | `experiment-log-summarizer` | `experiment_ledger.md`, `result_summary.md`, `experiment_repos.md`, `results/` |
 | Write ML/AI paper sections | `paper-writing` | `paper/` or `sections/`, `result_summary.md` |
 | Write Chinese survey / related work draft | `survey-writer` | `paper/related_work.*` or `.pipeline/docs/survey.md` |
 | Create Figure 1, architecture diagrams, plots | `academic-plotting` | `figures/`, `paper/figures/`, or `assets/figures/` |
 | Simulate peer review | `paper-reviewer` | `review_log.md` |
 | Draft rebuttal from reviewer comments | `review-rebuttal` | `.pipeline/docs/rebuttal_draft.md` |
-| Weekly lab update | `weekly-lab-update` | `.pipeline/docs/weekly_update.md`, `.pipeline/docs/weekly_updates/`, `agent_handoff.md` |
 
 For ML/AI implementation tasks outside this repo, consult
 `references/external-skill-index.md` and read only the matched external skill.
@@ -59,10 +58,10 @@ The canonical project state is:
     research_brief.json
     paper_bank.json
     gap_matrix.md
-    paper_digests.md
+    paper_notes.md
+    selected_idea.md
+    experiment_repos.md
     result_summary.md
-    weekly_update.md
-    weekly_updates/
   memory/
     project_truth.md
     orchestrator_state.md
@@ -80,11 +79,29 @@ literature/
     mind-graph.md
     summaries/
     references.bib
+results/
 ```
 
 Use `project_truth.md` for confirmed facts and decisions only. Use
 `decision_log.md` for rejected ideas, tradeoffs, and why a path was not chosen.
 Use `agent_handoff.md` to record what the next phase needs.
+
+## External Experiment Repos
+
+For research projects with large training/evaluation code, keep experiment code
+outside the project repo by default. The project repo stores the research state
+and lightweight evidence needed for decisions and writing.
+
+- Use `.pipeline/docs/experiment_repos.md` as the index of external experiment
+  repos, branches, commits, roles, and sync rules.
+- Use `.pipeline/memory/experiment_ledger.md` for run-level evidence. Include
+  repo alias and commit/hash when a result depends on code.
+- Use `.pipeline/docs/result_summary.md` for the compact result story used by
+  idea analysis and paper writing.
+- Use `results/` only for lightweight copied artifacts: compact tables, selected
+  logs, CSV/JSON summaries, and links to large artifacts.
+- Do not recursively inspect or copy external experiment repos unless the user
+  asks for a specific run, commit, or artifact.
 
 ## Role Modes
 
@@ -92,7 +109,7 @@ Use these modes as lightweight behavior frames, not separate agents:
 
 - `Conductor`: plan next action, update tasks, judge phase transitions.
 - `Literature Scout`: run `paper-finder`, screen relevance, update literature memory.
-- `Idea Analyst`: run `paper-deep-note` and `research-gap-finder`.
+- `Idea Analyst`: run `paper-note` and `research-gap-finder`.
 - `Experiment Driver`: design, run, and summarize experiments; update ledger.
 - `Paper Writer`: write sections using `paper-writing`, `survey-writer`, and `academic-plotting`.
 - `Reviewer`: run `paper-reviewer` or `review-rebuttal`.

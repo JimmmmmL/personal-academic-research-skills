@@ -42,7 +42,7 @@ literature/
   <topic-name>/
     memory-bank.md        # Master list of all discovered papers for this topic
     mind-graph.md         # Topic-paper connection graph
-    summaries/            # Per-paper .md files via paper-deep-note
+    summaries/            # Per-paper .md files via paper-note
     references.bib        # Topic-level BibTeX for this search
     pdfs/                 # Downloaded PDFs (only when user asks)
     discussions/          # Paper comparison logs
@@ -235,7 +235,7 @@ arXiv ID, DOI, Semantic Scholar paper ID, or lowercase title.
 
 Use `status=accepted` only when the user or project context indicates the paper
 should be used in the final related work. Otherwise use `discovered`,
-`candidate`, or `rejected`.
+`candidate`, `noted`, `summarized`, or `rejected`.
 
 ## Memory Bank (`memory-bank.md`)
 
@@ -251,7 +251,7 @@ Last updated: YYYY-MM-DD
 - **Venue**: Conference/Journal, Year
 - **URL**: Link to paper
 - **Citations**: N (if known)
-- **Status**: discovered | summarized | analyzed
+- **Status**: discovered | noted | summarized | analyzed
 - **Topics**: topic1, topic2
 - **Abstract**: 1-2 sentence description
 - **Notes**: Relevance observations
@@ -288,7 +288,7 @@ synchronized with the project-level file and avoid duplicate keys.
 
 ## Paper Summaries and Comparisons
 
-- **Summaries**: Invoke `paper-deep-note` or a research-paper analyst skill.
+- **Summaries**: Invoke `paper-note` or a research-paper analyst skill.
   Save to `literature/<topic-name>/summaries/<short-id>.md`. Only when user
   explicitly asks — do not auto-summarize.
 - **Comparisons**: Read existing summaries first; save discussion to

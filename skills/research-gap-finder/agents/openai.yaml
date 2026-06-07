@@ -1,6 +1,7 @@
 display_name: Research Gap Finder
-short_description: Find evidence-grounded gaps and candidate ideas from deep-read papers.
+short_description: Guide literature-grounded idea selection with user checkpoints.
 default_prompt: >-
-  Read the project's paper_bank, paper_digests, and literature memory, then map
-  coverage, identify evidence-grounded research gaps, score candidate ideas by
-  novelty threat and feasibility, and update gap_matrix and decision_log.
+  Read the project's paper_bank, paper_notes, and literature memory, summarize
+  the research landscape, propose 2-4 evidence-grounded candidate directions,
+  flag missing evidence and paper-finder follow-up queries, then stop for user
+  selection before writing a selected research direction.

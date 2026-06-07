@@ -1,0 +1,6 @@
+display_name: Paper Note
+short_description: Explain one paper's idea, structure, insight, and project relevance.
+default_prompt: >-
+  Turn one academic paper into a concise Chinese paper note with a vivid
+  beginner-friendly explanation, section-by-section gist, core insight, main
+  evidence, and concrete inspiration for the current project.

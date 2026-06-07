@@ -1,146 +1,192 @@
 ---
 name: research-gap-finder
-description: Analyze research gaps and candidate ideas from an active academic project after papers have been found and deep-read. Use when the input is a .pipeline project repo, paper_bank.json, paper_digests.md, literature_bank.md, a set of paper-deep-note outputs, or the user's early idea, and the user needs grounded gap analysis, idea generation, novelty-threat checks, feasibility ranking, problem framing, experiment hypotheses, or updates to gap_matrix and decision_log without forced novelty claims.
+description: Interactive research-gap and idea-convergence skill for an active academic project after papers have been found and noted. Use when the input is a .pipeline project repo, paper_bank.json, paper_notes.md, literature_bank.md, topic-folder notes, or a user's early idea, and the user wants to reason step by step about what is worth doing, compare candidate research directions, identify missing evidence, trigger paper-finder for targeted follow-up searches, select a direction, or update gap_matrix, decision_log, and agent_handoff without forced novelty claims.
 ---
 
 # Research Gap Finder
 
-用这个 skill 在已经完成部分/全部 `paper-finder` 和 `paper-deep-note` 工作后，基于项目证据分析 research gaps 和可做的 ideas。目标不是“脑暴创新点”，而是把已读论文中的覆盖面、矛盾、弱证据、未验证假设和实验缺口收敛成少量可验证的研究方向。
+用这个 skill 基于现有 literature 和 paper notes，和用户一步一步讨论“什么东西值得做”。它不是一次性替用户生成最终 idea，而是先整理证据、提出少量候选方向、指出哪些地方证据不足、必要时回到 `paper-finder` 补检索，然后让用户选择或组合方向。
+
+核心原则来自 ideation workflow：**diverge then converge**。先给 2-4 个差异化候选，再设置用户 checkpoint。不要跳过用户选择。
 
 ## Grounding Contract
 
-- 优先使用项目内证据：`.pipeline/docs/paper_digests.md`、`.pipeline/docs/paper_bank.json`、`.pipeline/memory/literature_bank.md`、`.pipeline/docs/research_brief.json`。
-- 每个 gap 都必须指向支持它的证据来源：具体论文、digest 结论、实验弱点、争议点、benchmark 缺口或用户确认的 project truth。
-- 区分 `confirmed gap`、`plausible gap`、`engineering opportunity`、`evaluation gap`、`reading gap`、`weak idea`。
-- 不要把“我没看到有人做”当作 novelty。默认把 novelty 当成待验证，除非有充分搜索和对照。
-- 候选 idea 必须可验证：给出最小实验、关键 baseline、失败判据和最大风险。
+- 优先使用项目内证据：`.pipeline/docs/paper_notes.md`、`.pipeline/docs/paper_bank.json`、`.pipeline/memory/literature_bank.md`、`.pipeline/docs/research_brief.json`、`literature/<topic-name>/memory-bank.md`。
+- 每个候选方向必须说明证据来源、缺失证据、可能重合的已有工作、最小验证实验。
+- 不要把“当前没看到”写成“没人做过”。默认 novelty 是待验证。
+- 如果关键证据不足，先提出 targeted paper-finder queries，而不是硬造 gap。
+- 不要替用户最终拍板。必须在候选方向对比后停下，等待用户选择、组合、否定或要求补检索。
 
 ## Core Workflow
 
-1. Detect project mode. If `.pipeline/` exists, read only:
-   - `.pipeline/docs/research_brief.json`
-   - `.pipeline/docs/paper_bank.json`
-   - `.pipeline/docs/paper_digests.md`
-   - `.pipeline/memory/literature_bank.md`
-   - `.pipeline/memory/project_truth.md`
-   - `.pipeline/memory/decision_log.md`
-2. Determine evidence maturity:
-   - `low`: fewer than 5 relevant papers or mostly abstract-level notes.
-   - `medium`: 5-15 papers with several deep notes and visible taxonomy.
-   - `high`: enough deep notes to compare methods, datasets, baselines, and failure modes.
-3. Build a coverage map: problems, method families, datasets/benchmarks, metrics, assumptions, failure modes, and claimed limitations.
-4. Read `references/problem_framing_template.md` when the problem boundary is fuzzy. Read `references/gap_analysis_template.md` before writing the final analysis.
-5. Generate 2-5 candidate gaps/ideas. Keep them meaningfully different, not small variants of the same angle.
-6. Evaluate each candidate with a lightweight quality gate: clarity, novelty threat, validity, feasibility, significance, and evidence strength.
-7. Rank candidates into:
-   - `pursue`: worth turning into experiment plan.
-   - `verify-first`: promising but needs targeted paper search or one sanity experiment.
-   - `park`: useful background but not current priority.
-   - `reject`: likely covered, too weak, or infeasible.
-8. In project mode, update `.pipeline/docs/gap_matrix.md`, `.pipeline/memory/decision_log.md`, and `.pipeline/memory/agent_handoff.md`.
+### Step 1: Read Project Evidence
 
-## Evidence Inputs
+If `.pipeline/` exists, read:
 
-Use `paper_bank.json` fields to filter papers:
-
-- Prioritize `status`: `analyzed`, `summarized`, `accepted`, then `candidate`.
-- Downweight papers with `evidenceLevel`: `metadata` or `abstract`.
-- Use `analysis.projectUse`, `analysis.mainClaim`, `analysis.readingPriority`, `topics`, `notes`, and `relevance` when present.
-
-Use `paper_digests.md` to extract:
-
-- repeated limitations across papers;
-- claims with weak or narrow evidence;
-- missing ablations or unfair baselines;
-- dataset/metric mismatch;
-- unresolved contradictions between papers;
-- opportunities to combine mechanisms only if the combination answers a clear research question.
-
-If there is not enough evidence, output a preliminary gap map and explicitly request the next `paper-finder` or `paper-deep-note` targets.
-
-## Gap Types
-
-Label each candidate as one primary type:
-
-- `capability gap`: current methods fail on a clearly defined capability or setting.
-- `mechanism gap`: papers use a component but do not explain/test why it works.
-- `evaluation gap`: benchmarks or metrics do not measure the actual claimed ability.
-- `assumption gap`: common assumptions are unrealistic, brittle, or untested.
-- `data gap`: data distribution, annotation, contamination, scale, or domain shift issue.
-- `efficiency gap`: compute, memory, latency, or deployment constraints are underexplored.
-- `theory/analysis gap`: empirical behavior lacks explanation or formal characterization.
-- `negative-result gap`: a plausible approach likely fails but the failure is informative.
-
-## Candidate Quality Gate
-
-Score only when evidence is sufficient; otherwise use `N/A`.
-
-| Dimension | Question |
-|---|---|
-| Clarity | Is the research question specific enough to implement and test? |
-| Novelty threat | Which existing papers might already cover it? Is overlap critical/high/moderate/low/unverified? |
-| Validity | Does the proposed mechanism plausibly address the bottleneck? |
-| Feasibility | Can the project test it with available data, compute, code, and time? |
-| Significance | If it works, would it change method design, evaluation practice, or paper framing? |
-| Evidence strength | Is the gap grounded in multiple papers, one strong paper, or only intuition? |
-
-Novelty threat labels:
-
-- `critical_overlap`: same method and same problem appears covered.
-- `high_overlap`: most contributions are covered by one or more papers.
-- `moderate_overlap`: components exist separately; delta needs sharpening.
-- `low_overlap`: only adjacent work found in current evidence.
-- `unverified`: current evidence is insufficient; targeted search required.
-
-If `critical_overlap` or `high_overlap` appears, do not discard silently. Record it in `decision_log.md` with the overlapping papers and possible refinements.
-
-## Project Pipeline Mode
-
-Append or update `.pipeline/docs/gap_matrix.md` with:
-
-```markdown
-## YYYY-MM-DD Gap Analysis
-
-### Evidence Snapshot
-- Topic:
-- Papers considered:
-- Deep notes considered:
-- Evidence maturity: low / medium / high
-
-### Coverage Map
-| Axis | Covered | Weak / Missing | Evidence |
-|---|---|---|---|
-
-### Candidate Gap Matrix
-| ID | Type | Gap / Idea | Evidence | Novelty Threat | Feasibility | Decision | Next Test |
-|---|---|---|---|---|---|---|---|
-
-### Recommended Next Steps
-1.
-2.
-3.
+```
+.pipeline/docs/research_brief.json
+.pipeline/docs/paper_bank.json
+.pipeline/docs/paper_notes.md
+.pipeline/memory/literature_bank.md
+.pipeline/memory/project_truth.md
+.pipeline/memory/decision_log.md
+.pipeline/docs/gap_matrix.md if present
 ```
 
-Append `.pipeline/memory/decision_log.md` for:
+Also inspect `literature/<topic-name>/memory-bank.md` or summaries only when the current topic needs more detail.
 
-- rejected gaps and why;
-- overlap risks;
-- assumptions that need targeted paper search;
-- user-selected direction when the user confirms one.
+If the user gives a specific idea, evaluate that idea first and then generate alternatives.
 
-Update `.pipeline/memory/agent_handoff.md` with the next action:
+### Step 2: Diagnose Evidence Maturity
 
-- papers to find/read next;
-- one sanity experiment to run;
-- candidate direction to refine;
-- writing implications if the idea is already mature.
+Label the current evidence:
 
-Do not write confirmed claims to `project_truth.md` unless they are directly backed by project evidence or user confirmation.
+- `low`: fewer than 5 relevant papers, mostly metadata/abstract notes, or no clear baselines.
+- `medium`: several paper notes and a visible taxonomy, but missing recent or mechanism-level coverage.
+- `high`: enough notes to compare methods, datasets, baselines, limitations, and failure modes.
 
-## Output Rules
+If evidence is `low`, generate a preliminary map plus targeted `paper-finder` tasks. Do not present strong novelty claims.
 
-- Default output: coverage map, 2-5 candidate gaps, quality-gate table, recommended next step.
-- If the user asks “有没有 idea 可以做”, present candidates but do not overclaim novelty.
-- If evidence maturity is low, lead with “当前只能做 preliminary gap map”.
-- If the user has an idea, evaluate it first, then optionally generate alternatives.
-- Ask for user selection before converting a candidate into a final publishable angle or experiment plan.
+### Step 3: Build A Compact Landscape
+
+Summarize only what affects ideation:
+
+- problem variants and task settings;
+- method families and representative papers;
+- baselines and benchmarks;
+- repeated limitations or untested assumptions;
+- evaluation weaknesses;
+- places where papers disagree;
+- project constraints: compute, timeline, data, target venue, user preference.
+
+### Step 4: Generate 2-4 Candidate Directions
+
+Generate 2-4 candidates, no more unless the user asks. Candidates should be meaningfully different:
+
+- conservative baseline/ablation direction;
+- mechanism or method direction;
+- evaluation/benchmark direction;
+- negative-result or boundary-case direction;
+- bolder new framing if evidence supports it.
+
+For each candidate include:
+
+- name;
+- core idea in 1-2 sentences;
+- research question;
+- evidence from existing literature;
+- what is missing or uncertain;
+- required follow-up paper search, if any;
+- minimum experiment or sanity check;
+- likely baselines;
+- feasibility and risk;
+- why it might be publishable or why it may only be a workshop/internal direction.
+
+### Step 5: Quality Gate
+
+Evaluate candidates lightly, not as a full reviewer report:
+
+| Dimension | Check |
+|---|---|
+| Clarity | Is the research question concrete enough to test? |
+| Novelty threat | Which papers may already cover it? critical / high / moderate / low / unverified |
+| Validity | Does the idea plausibly address the bottleneck? |
+| Feasibility | Can the project test it with available data, compute, code, and time? |
+| Significance | If it works, would it change method design, evaluation, or framing? |
+| Evidence need | What exact paper search or note is needed before committing? |
+
+If novelty threat is `critical` or `high`, present the overlap and suggest refinements or abandonment. If novelty is `unverified`, propose search queries for `paper-finder`.
+
+### Step 6: User Checkpoint
+
+Stop after presenting candidates and ask the user to choose:
+
+```markdown
+## 需要你确认
+1. 你倾向哪个方向？
+2. 是否要组合两个方向？
+3. 哪个风险你最担心？
+4. 是否先启动 paper-finder 补查某个证据缺口？
+```
+
+Do not write a final publishable angle or experiment plan before the user responds.
+
+### Step 7: Converge After User Selection
+
+Only after user selection:
+
+1. Write or append `.pipeline/docs/gap_matrix.md`.
+2. Write selected direction to `.pipeline/docs/selected_idea.md`.
+3. Append selection reasoning, rejected directions, and evidence gaps to `.pipeline/memory/decision_log.md`.
+4. Update `.pipeline/memory/agent_handoff.md` with the next action:
+   - run `paper-finder` with specific queries;
+   - make notes for specific papers using `paper-note`;
+   - run a sanity experiment;
+   - refine writing/framing.
+
+Do not write confirmed claims to `project_truth.md` unless backed by files or explicit user confirmation.
+
+## Targeted Paper-Finder Handoff
+
+When evidence is insufficient, output concrete search tasks:
+
+```markdown
+## 建议补充检索
+- Query:
+- Why needed:
+- What would change if found:
+- Search angles:
+  - direct concept:
+  - mechanism:
+  - application/framing:
+  - venue/year:
+```
+
+Then ask whether to run `paper-finder`. If the user says yes, route to `paper-finder`; after new papers are noted, rerun this skill.
+
+## Output Shape Before User Selection
+
+Default pre-selection output:
+
+```markdown
+# Gap / Idea Exploration
+
+## Evidence Snapshot
+
+## Current Landscape
+
+## Candidate Directions
+### Direction A
+...
+
+## Comparison Table
+
+## Missing Evidence / Paper-Finder Tasks
+
+## 需要你确认
+...
+```
+
+## Output Shape After User Selection
+
+Default post-selection output:
+
+```markdown
+# Selected Research Direction
+
+## Direction
+## Core Question
+## Why This Is Worth Doing
+## Evidence Base
+## Novelty Threats
+## Minimum Experiment
+## Baselines
+## Risks
+## Next Actions
+## Rejected / Parked Directions
+```
+
+## References
+
+- Read `references/problem_framing_template.md` when the problem boundary is fuzzy.
+- Read `references/gap_analysis_template.md` before writing `gap_matrix.md` or `selected_idea.md`.

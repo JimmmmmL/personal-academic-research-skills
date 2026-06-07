@@ -14,8 +14,8 @@ mkdir(".pipeline/docs");
 mkdir(".pipeline/memory");
 mkdir(".pipeline/tasks");
 mkdir(".pipeline/.events");
-mkdir(".pipeline/docs/weekly_updates");
 mkdir("literature");
+mkdir("results");
 mkdir("paper");
 mkdir("figures");
 
@@ -32,9 +32,28 @@ writeJsonIfMissing(".pipeline/docs/paper_bank.json", {
   version: 1,
   papers: []
 });
-writeIfMissing(".pipeline/docs/paper_digests.md", "# Paper Digests\n\n");
+writeIfMissing(".pipeline/docs/paper_notes.md", "# Paper Notes\n\n");
 writeIfMissing(".pipeline/docs/gap_matrix.md", "# Gap Matrix\n\n");
-writeIfMissing(".pipeline/docs/weekly_update.md", "# Weekly Update\n\n");
+writeIfMissing(".pipeline/docs/selected_idea.md", "# Selected Idea\n\n");
+writeIfMissing(".pipeline/docs/result_summary.md", "# Result Summary\n\n");
+writeIfMissing(".pipeline/docs/experiment_repos.md", `# External Experiment Repositories
+
+This project repo is the research control plane. Keep large training code,
+datasets, checkpoints, and raw logs in external experiment repositories. Sync
+only the evidence needed for research decisions and paper writing back here.
+
+| Alias | Repo | Role | Branch / Commit | Last Synced | Notes |
+|---|---|---|---|---|---|
+
+## Sync Rules
+
+- Record every meaningful run in \`.pipeline/memory/experiment_ledger.md\`.
+- Store only lightweight artifacts in \`results/\`: result tables, selected logs,
+  compact CSV/JSON summaries, and links to large artifacts.
+- Include external repo alias and commit/hash whenever a result depends on code.
+- Do not copy checkpoints, datasets, full training logs, or generated caches into
+  this project repo unless the user explicitly asks.
+`);
 
 writeJsonIfMissing(".pipeline/tasks/tasks.json", {
   version: 1,
@@ -62,8 +81,8 @@ writeIfMissing(".pipeline/memory/literature_bank.md", `# Literature Bank
 `);
 writeIfMissing(".pipeline/memory/experiment_ledger.md", `# Experiment Ledger
 
-| Run | Date | Config | Metric | Result | Notes |
-|---|---|---|---|---|---|
+| Run | Date | External Repo | Commit | Config | Metric | Result | Artifact | Notes |
+|---|---|---|---|---|---|---|---|---|
 `);
 writeIfMissing(".pipeline/memory/review_log.md", "# Review Log\n\n");
 writeIfMissing(".pipeline/memory/agent_handoff.md", "# Agent Handoff\n\n");
@@ -110,7 +129,7 @@ Use the personal academic research harness. On startup, read .pipeline/docs/rese
 
 Preferred routing:
 - Literature search: paper-finder
-- Paper reading: paper-deep-note
+- Paper notes: paper-note
 - Gap / idea analysis: research-gap-finder
 - Experiment summary: experiment-log-summarizer
 - Paper writing: paper-writing
@@ -119,5 +138,17 @@ Preferred routing:
 - Rebuttal: review-rebuttal
 
 Do not fabricate citations, experiment results, benchmark numbers, or venue rules.
+
+Experiment code is external by default. Use .pipeline/docs/experiment_repos.md
+as the entry point to external experiment repositories, and summarize confirmed
+results into .pipeline/memory/experiment_ledger.md, .pipeline/docs/result_summary.md,
+and lightweight files under results/. Do not recursively inspect or copy large
+external experiment repositories unless the user asks for a specific run,
+commit, or artifact.
+
+Default context discipline:
+- Literature tasks: read .pipeline/memory/literature_bank.md, .pipeline/docs/paper_bank.json, and .pipeline/docs/paper_notes.md first.
+- Experiment tasks: read .pipeline/docs/experiment_repos.md, .pipeline/memory/experiment_ledger.md, and .pipeline/docs/result_summary.md first.
+- Writing tasks: read .pipeline/docs/selected_idea.md and .pipeline/docs/result_summary.md before opening specific paper sections.
 `;
 }
