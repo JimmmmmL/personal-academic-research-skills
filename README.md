@@ -127,6 +127,12 @@ the subdirectories under `skills/` into that directory.
 cp -r personal-academic-research-skills/skills/* ~/.codex/skills/
 ```
 
+or if you are using Claude Code, 
+
+```bash
+cp -r personal-academic-research-skills/skills/* ~/.claude/skills/
+```
+
 For local development,
 you can also keep this repo as a standalone skill source and reference paths
 from your Codex configuration.
