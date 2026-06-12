@@ -61,6 +61,7 @@ writeJsonIfMissing(".pipeline/tasks/tasks.json", {
 });
 
 writeIfMissing("AGENTS.md", renderAgents(topic, stage));
+writeIfMissing("CLAUDE.md", renderAgents(topic, stage));
 writeIfMissing(".pipeline/memory/project_truth.md", `# Project Truth
 
 ## Topic
