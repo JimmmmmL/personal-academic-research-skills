@@ -14,7 +14,10 @@ mkdir(".pipeline/docs");
 mkdir(".pipeline/memory");
 mkdir(".pipeline/tasks");
 mkdir(".pipeline/.events");
+mkdir(".pipeline/archive");
 mkdir("literature");
+mkdir("experiments");
+mkdir("meetings");
 mkdir("results");
 mkdir("paper");
 mkdir("figures");
@@ -36,29 +39,68 @@ writeIfMissing(".pipeline/docs/paper_notes.md", "# Paper Notes\n\n");
 writeIfMissing(".pipeline/docs/gap_matrix.md", "# Gap Matrix\n\n");
 writeIfMissing(".pipeline/docs/selected_idea.md", "# Selected Idea\n\n");
 writeIfMissing(".pipeline/docs/result_summary.md", "# Result Summary\n\n");
-writeIfMissing(".pipeline/docs/experiment_repos.md", `# External Experiment Repositories
+writeIfMissing(".pipeline/docs/experiment_map.md", `# Experiment Map
 
-This project repo is the research control plane. Keep large training code,
-datasets, checkpoints, and raw logs in external experiment repositories. Sync
-only the evidence needed for research decisions and paper writing back here.
+Keep first-party experiment code under \`experiments/\` and track it in the
+top-level project repo. Register third-party or nested dependencies here so
+results remain traceable without scanning the whole workspace.
 
-| Alias | Repo | Role | Branch / Commit | Last Synced | Notes |
-|---|---|---|---|---|---|
+| Name | Path | Role | Origin | Integration | Revision | Notes |
+|---|---|---|---|---|---|---|
+| main | experiments/ | primary training and evaluation | project | top-level repo | HEAD | |
 
-## Sync Rules
+## Integration Rules
 
 - Record every meaningful run in \`.pipeline/memory/experiment_ledger.md\`.
-- Store only lightweight artifacts in \`results/\`: result tables, selected logs,
-  compact CSV/JSON summaries, and links to large artifacts.
-- Include external repo alias and commit/hash whenever a result depends on code.
-- Do not copy checkpoints, datasets, full training logs, or generated caches into
-  this project repo unless the user explicitly asks.
+- Put third-party baselines under \`experiments/third_party/\`.
+- Prefer a submodule when upstream tracking matters. Prefer subtree/vendor code
+  when atomic checkout and local modification matter more.
+- Store only lightweight, decision-relevant artifacts in \`results/\`.
+- Keep datasets, checkpoints, full logs, caches, and large outputs ignored or in
+  configured artifact storage.
 `);
 
 writeJsonIfMissing(".pipeline/tasks/tasks.json", {
   version: 1,
   tasks: []
 });
+
+ensureBlock(".gitignore", "research-workspace-generated-files", `# Local experiment data and generated artifacts
+experiments/**/data/
+experiments/**/datasets/
+experiments/**/checkpoints/
+experiments/**/outputs/
+experiments/**/logs/
+experiments/**/.cache/
+experiments/**/wandb/
+*.ckpt
+*.pt
+*.pth
+
+# Secrets and local environments
+.env
+.env.*
+.venv/
+venv/
+
+# Python and editor caches
+__pycache__/
+*.pyc
+.DS_Store
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+`);
 
 writeIfMissing("AGENTS.md", renderAgents(topic, stage));
 writeIfMissing("CLAUDE.md", renderAgents(topic, stage));
@@ -82,8 +124,16 @@ writeIfMissing(".pipeline/memory/literature_bank.md", `# Literature Bank
 `);
 writeIfMissing(".pipeline/memory/experiment_ledger.md", `# Experiment Ledger
 
-| Run | Date | External Repo | Commit | Config | Metric | Result | Artifact | Notes |
+| Run | Date | Code Path | Revision | Config | Metric | Result | Artifact | Notes |
 |---|---|---|---|---|---|---|---|---|
+`);
+writeIfMissing(".pipeline/archive/index.md", `# Pipeline Archive
+
+Do not load archive snapshots during normal startup. Open a snapshot only when
+the active memory links to it or historical detail is required.
+
+| Snapshot | Date | Reason | Active Direction | Notes |
+|---|---|---|---|---|
 `);
 writeIfMissing(".pipeline/memory/review_log.md", "# Review Log\n\n");
 writeIfMissing(".pipeline/memory/agent_handoff.md", "# Agent Handoff\n\n");
@@ -120,6 +170,18 @@ function writeJsonIfMissing(rel, obj) {
   writeIfMissing(rel, `${JSON.stringify(obj, null, 2)}\n`);
 }
 
+function ensureBlock(rel, marker, content) {
+  const file = path.join(root, rel);
+  const begin = `# BEGIN ${marker}`;
+  const end = `# END ${marker}`;
+  const existing = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  if (existing.includes(begin)) return;
+  const separator = existing && !existing.endsWith("\n\n") ? "\n" : "";
+  const block = `${begin}\n${content.trimEnd()}\n${end}\n`;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.appendFileSync(file, `${separator}${block}`, "utf8");
+}
+
 function renderAgents(topic, stage) {
   return `# Academic Research Project
 
@@ -133,6 +195,7 @@ Preferred routing:
 - Paper notes: paper-note
 - Gap / idea analysis: research-gap-finder
 - Experiment summary: experiment-log-summarizer
+- Memory compaction: compact-research-project
 - Paper writing: paper-writing
 - Figures: academic-plotting
 - Peer review: paper-reviewer
@@ -140,16 +203,20 @@ Preferred routing:
 
 Do not fabricate citations, experiment results, benchmark numbers, or venue rules.
 
-Experiment code is external by default. Use .pipeline/docs/experiment_repos.md
-as the entry point to external experiment repositories, and summarize confirmed
-results into .pipeline/memory/experiment_ledger.md, .pipeline/docs/result_summary.md,
-and lightweight files under results/. Do not recursively inspect or copy large
-external experiment repositories unless the user asks for a specific run,
-commit, or artifact.
+Experiment code lives under experiments/ by default. Use
+.pipeline/docs/experiment_map.md as the entry point to first-party code and
+nested dependencies, and summarize confirmed results into
+.pipeline/memory/experiment_ledger.md, .pipeline/docs/result_summary.md, and
+lightweight files under results/. Do not recursively inspect experiments/ unless
+the user asks for a specific component, run, config, or artifact.
+
+Treat .pipeline/ as hot memory. Do not load .pipeline/archive/ during normal
+startup. Use compact-research-project when canonical memory is dominated by
+superseded directions, completed runs, stale handoffs, or duplicated notes.
 
 Default context discipline:
 - Literature tasks: read .pipeline/memory/literature_bank.md, .pipeline/docs/paper_bank.json, and .pipeline/docs/paper_notes.md first.
-- Experiment tasks: read .pipeline/docs/experiment_repos.md, .pipeline/memory/experiment_ledger.md, and .pipeline/docs/result_summary.md first.
+- Experiment tasks: read .pipeline/docs/experiment_map.md, .pipeline/memory/experiment_ledger.md, and .pipeline/docs/result_summary.md first.
 - Writing tasks: read .pipeline/docs/selected_idea.md and .pipeline/docs/result_summary.md before opening specific paper sections.
 `;
 }

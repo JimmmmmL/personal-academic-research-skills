@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compact Research Project"
+  short_description: "Archive stale research state and compact active memory"
+  default_prompt: "Use $compact-research-project to archive stale project state and compact the active .pipeline memory."

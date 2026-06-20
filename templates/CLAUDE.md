@@ -19,25 +19,27 @@ Then ask what mode to use only when the next action is ambiguous:
 - `experiment`: design, run, and summarize experiments
 - `writing`: draft paper sections and figures
 - `review`: simulate review or draft rebuttal
+- `compact`: archive stale state and rewrite active project memory
 - `direct`: follow the user's explicit instruction
 
 ## Context Discipline
 
-This repo is the research control plane. Literature details, experiment code,
-and paper drafts can all be large, so default to interface files before opening
-deep folders.
+This repo is the complete research workspace. Literature details, experiment
+code, and paper drafts can all be large, so default to interface files before
+opening deep folders.
 
 - For literature, read `.pipeline/memory/literature_bank.md`,
   `.pipeline/docs/paper_bank.json`, and `.pipeline/docs/paper_notes.md` first.
-- For experiments, read `.pipeline/docs/experiment_repos.md`,
+- For experiments, read `.pipeline/docs/experiment_map.md`,
   `.pipeline/memory/experiment_ledger.md`, and
   `.pipeline/docs/result_summary.md` first.
 - For writing, read `.pipeline/docs/selected_idea.md`,
   `.pipeline/docs/result_summary.md`, and the specific `paper/` section the user
   asks about.
-- Do not recursively read `literature/`, `results/`, `paper/`, or external
-  experiment repositories unless the user asks for a specific topic, run,
-  artifact, or section.
+- Do not recursively read `literature/`, `experiments/`, `meetings/`, `results/`,
+  `paper/`, `figures/`, or `.pipeline/archive/` unless the user asks for a
+  specific topic, component, run, artifact, meeting, section, or historical
+  snapshot.
 
 ## Memory Rules
 
@@ -47,23 +49,29 @@ deep folders.
 - `.pipeline/docs/paper_notes.md` stores concise paper notes.
 - `.pipeline/docs/gap_matrix.md` stores evidence-grounded gaps and candidate ideas.
 - `.pipeline/docs/selected_idea.md` stores the user-confirmed research direction.
-- `.pipeline/docs/experiment_repos.md` stores external experiment repo entries
-  and sync rules.
+- `.pipeline/docs/experiment_map.md` stores experiment component paths, origins,
+  integration methods, and revisions.
 - `.pipeline/docs/result_summary.md` stores the current compact result story for
   decisions and writing.
 - `.pipeline/memory/experiment_ledger.md` stores experiment configurations and results.
 - `.pipeline/memory/review_log.md` stores review reports and major concerns.
 - `.pipeline/memory/decision_log.md` stores rejected ideas and uncertainty.
 - `.pipeline/memory/agent_handoff.md` stores what the next phase needs.
+- `.pipeline/archive/` stores lossless snapshots of superseded project memory
+  and is cold storage, not startup context.
 - `literature/<topic-name>/` stores topic-specific search outputs,
   summaries, discussions, PDFs, and topic-level BibTeX.
+- `experiments/` stores first-party experiment code and mapped third-party
+  baselines.
+- `meetings/` stores raw meeting notes; durable decisions must be promoted into
+  `.pipeline/memory/project_truth.md` or `decision_log.md`.
 - `results/` stores lightweight copied artifacts only: compact result tables,
-  selected logs, JSON/CSV summaries, and links to large external artifacts.
+  selected logs, JSON/CSV summaries, and links to large artifacts.
 
-Experiment source code, checkpoints, datasets, raw logs, and generated caches
-should stay in external experiment repositories by default. Use
-`.pipeline/docs/experiment_repos.md` as the entry point, and include external
-repo alias plus commit/hash for results that depend on code.
+Track first-party experiment source under `experiments/` in the top-level repo.
+Keep checkpoints, datasets, raw logs, and generated caches ignored or in
+artifact storage. Use `.pipeline/docs/experiment_map.md` as the entry point, and
+include code path plus revision for results that depend on nested code.
 
 Do not fabricate citations, benchmark results, experiment outcomes, or venue
 rules. Mark unverified items explicitly.
@@ -74,6 +82,7 @@ rules. Mark unverified items explicitly.
 - Single-paper note: `paper-note`
 - Gap and idea analysis: `research-gap-finder`
 - Experiment logs: `experiment-log-summarizer`
+- Memory compaction: `compact-research-project`
 - ML paper drafting: `paper-writing`
 - Related work / Chinese survey: `survey-writer`
 - Figures and plots: `academic-plotting`

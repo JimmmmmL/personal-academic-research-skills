@@ -29,6 +29,7 @@ response drafting.
 personal-academic-research-skills/
 ├── skills/
 │   ├── academic-research-harness/   # project router and .pipeline protocol
+│   ├── compact-research-project/    # archive stale state and compact hot memory
 │   ├── paper-finder/                # multi-angle paper discovery
 │   ├── paper-writing/               # ML/AI paper drafting and citation checks
 │   ├── academic-plotting/           # Figure 1, architecture diagrams, plots
@@ -50,8 +51,7 @@ Inside each initialized research project, literature-search artifacts live under
 
 ## Recommended Project Topology
 
-Use one project repo as the research control plane, plus external experiment
-repos for large codebases:
+Use one top-level repo as the complete research workspace:
 
 ```text
 my-paper-project/
@@ -63,37 +63,56 @@ my-paper-project/
 │   │   ├── paper_notes.md
 │   │   ├── gap_matrix.md
 │   │   ├── selected_idea.md
-│   │   ├── experiment_repos.md
+│   │   ├── experiment_map.md
 │   │   └── result_summary.md
-│   └── memory/
-│       ├── literature_bank.md
-│       ├── experiment_ledger.md
-│       └── decision_log.md
+│   ├── memory/
+│   │   ├── literature_bank.md
+│   │   ├── experiment_ledger.md
+│   │   └── decision_log.md
+│   └── archive/                     # cold snapshots; never startup context
 ├── literature/
+├── meetings/
+├── experiments/
+│   ├── src/                         # first-party code
+│   ├── configs/
+│   ├── scripts/
+│   └── third_party/                 # selected baselines/dependencies
 ├── results/
-├── paper/
-└── figures/
-
-external-training-repo/
-├── training code
-├── configs
-├── raw logs
-└── checkpoints
+├── figures/                         # figure source and working assets
+└── paper/                           # LaTeX and exported paper figures
 ```
 
-The project repo should be small enough to open in Codex and publish on GitHub.
-Keep training code, datasets, checkpoints, raw logs, and caches in external
-experiment repos. Sync only the research evidence needed for decisions and
-writing:
+Track first-party experiment code in the top-level repo. This gives Codex one
+project boundary for decisions, implementation, results, and writing. Keep the
+Git repository small by ignoring datasets, checkpoints, raw logs, caches, and
+large generated outputs rather than moving the whole experiment implementation
+to another workspace.
 
-- external repo entry: `.pipeline/docs/experiment_repos.md`
+- experiment component map: `.pipeline/docs/experiment_map.md`
 - run-level facts: `.pipeline/memory/experiment_ledger.md`
 - compact result story: `.pipeline/docs/result_summary.md`
-- lightweight copied artifacts: `results/`
+- decision-relevant artifacts: `results/`
 
-This avoids context pollution without making repo communication complicated.
-Codex reads `.pipeline/` first, then opens a specific literature topic, result
-artifact, paper section, or external repo commit only when the user asks.
+For third-party code under `experiments/third_party/`:
+
+- use a Git submodule when following upstream commits matters;
+- use a Git subtree or vendor copy when atomic checkout and local modification
+  matter more;
+- do not use a nested untracked clone, because the top-level repo cannot record
+  which code version produced a result.
+
+For an existing project, migrate `.pipeline/docs/experiment_repos.md` into
+`experiment_map.md` once, verify every result still has a path and revision,
+then preserve the old file in the first compaction snapshot.
+
+For `paper/`, prefer normal top-level tracking. If Overleaf must support
+bidirectional collaborative editing, make `paper/` the one intentional
+submodule, or use a documented subtree/sync workflow. Declare one source of
+truth; do not casually edit both sides.
+
+Context control comes from `.pipeline/` being compact hot memory and from not
+recursively opening deep folders. Historical state lives under
+`.pipeline/archive/` and is loaded only through explicit pointers.
 
 ## Core Skill Routing
 
@@ -105,6 +124,7 @@ artifact, paper section, or external repo commit only when the user asks.
 | Analyze gaps or refine ideas | `research-gap-finder` |
 | Extract benchmark tables | `benchmark-extractor` |
 | Summarize experiment logs | `experiment-log-summarizer` |
+| Archive stale state / compact context | `compact-research-project` |
 | Write Chinese survey / related work | `survey-writer` |
 | Write ML/AI paper sections | `paper-writing` |
 | Write systems papers | `systems-paper-writing` |
@@ -168,7 +188,7 @@ The script creates:
 │   ├── paper_notes.md
 │   ├── gap_matrix.md
 │   ├── selected_idea.md
-│   ├── experiment_repos.md
+│   ├── experiment_map.md
 │   └── result_summary.md
 ├── memory/
 │   ├── project_truth.md
@@ -178,9 +198,13 @@ The script creates:
 │   ├── decision_log.md
 │   ├── agent_handoff.md
 │   └── execution_context.md
-└── tasks/
-    └── tasks.json
+├── tasks/
+│   └── tasks.json
+└── archive/
+    └── index.md
 literature/
+experiments/
+meetings/
 results/
 paper/
 figures/
@@ -238,19 +262,19 @@ for targeted follow-up. After user selection, it writes the result to
 
 ### 3. Experiments
 
-For most research projects, keep the experiment implementation in a separate
-repo. In the project repo, first register it in
-`.pipeline/docs/experiment_repos.md`:
+Keep the primary implementation under `experiments/` and register each
+component in `.pipeline/docs/experiment_map.md`:
 
 ```markdown
-| Alias | Repo | Role | Branch / Commit | Last Synced | Notes |
-|---|---|---|---|---|---|
-| main-exp | <github-or-relative-repo> | training and evaluation | main / abc1234 | 2026-06-07 | primary codebase |
+| Name | Path | Role | Origin | Integration | Revision | Notes |
+|---|---|---|---|---|---|---|
+| main | experiments/ | training and evaluation | project | top-level repo | HEAD | primary codebase |
+| baseline-x | experiments/third_party/baseline-x | comparison | upstream URL | submodule | abc1234 | patched locally |
 ```
 
 Then record meaningful runs in `.pipeline/memory/experiment_ledger.md`. Each
-entry should include the external repo alias, commit/hash, config, metric,
-result, and any lightweight artifact saved under `results/`.
+entry should include the code path, revision, config, metric, result, and any
+lightweight artifact saved under `results/`.
 
 When logs become messy, use `experiment-log-summarizer` to produce:
 
@@ -261,11 +285,29 @@ When logs become messy, use `experiment-log-summarizer` to produce:
 - next experiment suggestions;
 - ledger entries and a compact `.pipeline/docs/result_summary.md` update.
 
-Do not copy large checkpoints, datasets, full raw logs, or generated caches into
-the project repo unless there is a specific reason. Prefer links, commit hashes,
-small CSV/JSON summaries, selected log excerpts, and final result tables.
+Do not commit large checkpoints, datasets, full raw logs, or generated caches.
+Prefer artifact-store links, revisions, small CSV/JSON summaries, selected log
+excerpts, and final result tables.
 
-### 4. Paper Writing
+### 4. Memory Compaction
+
+Use `compact-research-project` when `.pipeline/` has accumulated abandoned
+directions, completed experiment cycles, duplicated notes, or stale handoffs.
+The skill:
+
+- audits active memory size;
+- classifies state as hot, warm, or cold;
+- preserves exact originals in
+  `.pipeline/archive/YYYY-MM-DD-<slug>/`;
+- rewrites canonical memory around the active direction;
+- adds archive pointers and verifies that a fresh agent can recover the next
+  action without loading history.
+
+Compaction is not deletion. Normal startup must ignore `.pipeline/archive/`.
+Open an archive snapshot only when a canonical file points to it or historical
+detail is needed.
+
+### 5. Paper Writing
 
 For ML/AI papers, use `paper-writing`. It follows this order:
 
@@ -286,7 +328,7 @@ citations should be explicit placeholders.
 
 For systems venues, use `systems-paper-writing` instead.
 
-### 5. Figures
+### 6. Figures
 
 Use `academic-plotting`:
 
@@ -296,7 +338,7 @@ Use `academic-plotting`:
 Numerical plots should be generated from saved data or logs, not invented from
 paper prose.
 
-### 6. Review And Rebuttal
+### 7. Review And Rebuttal
 
 Before submission, use `paper-reviewer` for a harsh reviewer-style pass. After
 real reviews arrive, use `review-rebuttal` to classify concerns and draft a

@@ -1,6 +1,6 @@
 ---
 name: academic-research-harness
-description: Personal academic research project harness for Codex. Use when starting or resuming a research project, coordinating literature search, paper notes, gap analysis, experiments, paper writing, review, or rebuttal through a .pipeline memory structure. Routes to paper-finder, paper-note, research-gap-finder, experiment-log-summarizer, paper-writing, academic-plotting, survey-writer, paper-reviewer, and review-rebuttal instead of doing every task inline.
+description: Personal academic research project harness for Codex. Use when starting or resuming a research project, coordinating literature search, paper notes, gap analysis, experiments, memory compaction, paper writing, review, or rebuttal through a .pipeline memory structure. Routes to focused research skills instead of doing every task inline.
 metadata:
   version: "0.1.0"
 ---
@@ -38,14 +38,15 @@ adapt `scripts/init_research_project.mjs`.
 | Find papers, related work, source discovery | `paper-finder` | `literature_bank.md`, `paper_bank.json`, `references.bib` |
 | Make a concise note for one paper | `paper-note` | `.pipeline/docs/paper_notes.md`, `paper_bank.json`, `literature_bank.md` |
 | Analyze gap, decide idea, test novelty | `research-gap-finder` | `.pipeline/docs/gap_matrix.md`, `.pipeline/docs/selected_idea.md`, `decision_log.md`, `agent_handoff.md` |
-| Summarize experiment logs or external experiment results | `experiment-log-summarizer` | `experiment_ledger.md`, `result_summary.md`, `experiment_repos.md`, `results/` |
+| Summarize experiment logs or workspace results | `experiment-log-summarizer` | `experiment_ledger.md`, `result_summary.md`, `experiment_map.md`, `results/` |
+| Compact stale or oversized project memory | `compact-research-project` | `.pipeline/archive/`, compact canonical memory files |
 | Write ML/AI paper sections | `paper-writing` | `paper/` or `sections/`, `result_summary.md` |
 | Write Chinese survey / related work draft | `survey-writer` | `paper/related_work.*` or `.pipeline/docs/survey.md` |
 | Create Figure 1, architecture diagrams, plots | `academic-plotting` | `figures/`, `paper/figures/`, or `assets/figures/` |
 | Simulate peer review | `paper-reviewer` | `review_log.md` |
 | Draft rebuttal from reviewer comments | `review-rebuttal` | `.pipeline/docs/rebuttal_draft.md` |
 
-For ML/AI implementation tasks outside this repo, consult
+For specialized ML/AI implementation tasks, consult
 `references/external-skill-index.md` and read only the matched external skill.
 
 ## Pipeline Memory
@@ -60,7 +61,7 @@ The canonical project state is:
     gap_matrix.md
     paper_notes.md
     selected_idea.md
-    experiment_repos.md
+    experiment_map.md
     result_summary.md
   memory/
     project_truth.md
@@ -73,35 +74,62 @@ The canonical project state is:
     decision_log.md
   tasks/
     tasks.json
+  archive/
 literature/
   <topic-name>/
     memory-bank.md
     mind-graph.md
     summaries/
     references.bib
+experiments/
+meetings/
 results/
+paper/
+figures/
 ```
 
 Use `project_truth.md` for confirmed facts and decisions only. Use
 `decision_log.md` for rejected ideas, tradeoffs, and why a path was not chosen.
 Use `agent_handoff.md` to record what the next phase needs.
 
-## External Experiment Repos
+## Experiment Workspace
 
-For research projects with large training/evaluation code, keep experiment code
-outside the project repo by default. The project repo stores the research state
-and lightweight evidence needed for decisions and writing.
+Keep first-party training and evaluation code under `experiments/` in the
+project workspace. Track it in the top-level repo by default so research state,
+code, results, and writing share one project boundary.
 
-- Use `.pipeline/docs/experiment_repos.md` as the index of external experiment
-  repos, branches, commits, roles, and sync rules.
+- Use `.pipeline/docs/experiment_map.md` to index experiment components, local
+  paths, origins, integration method, and revisions.
+- Put original project code directly under `experiments/`.
+- Put third-party baselines under `experiments/third_party/`. Use a submodule
+  when upstream tracking matters, or a subtree/vendor copy when one-repo
+  checkout and local modification matter more.
 - Use `.pipeline/memory/experiment_ledger.md` for run-level evidence. Include
-  repo alias and commit/hash when a result depends on code.
+  code path and revision when a result depends on a nested dependency.
 - Use `.pipeline/docs/result_summary.md` for the compact result story used by
   idea analysis and paper writing.
-- Use `results/` only for lightweight copied artifacts: compact tables, selected
-  logs, CSV/JSON summaries, and links to large artifacts.
-- Do not recursively inspect or copy external experiment repos unless the user
-  asks for a specific run, commit, or artifact.
+- Use `results/` only for lightweight, decision-relevant artifacts. Keep
+  datasets, checkpoints, raw logs, caches, and large generated outputs ignored
+  under local storage or configured artifact storage.
+- Do not recursively inspect all of `experiments/` by default. Open the mapped
+  component, config, run, or artifact required by the current task.
+
+Treat `paper/` as first-party project content when possible. If collaborators
+must edit through Overleaf Git, allow `paper/` to be the one intentional
+submodule or use a subtree/sync workflow, but keep a single declared source of
+truth in project documentation.
+
+## Memory Compaction
+
+Keep `.pipeline/` as hot project memory rather than a complete event history.
+When stale directions, completed runs, or repeated notes make canonical files
+hard to load, route to `compact-research-project`.
+
+- Preserve exact pre-compaction files under
+  `.pipeline/archive/YYYY-MM-DD-<slug>/`.
+- Keep `.pipeline/archive/index.md` as the archive entry point.
+- Never load `.pipeline/archive/` during normal startup.
+- Retain archive pointers and decision-critical summaries in canonical files.
 
 ## Role Modes
 
@@ -122,6 +150,8 @@ After any substantive task:
 2. Append rejected options or uncertainty to `.pipeline/memory/decision_log.md`.
 3. Update `.pipeline/memory/agent_handoff.md` with next-step context.
 4. Update `.pipeline/tasks/tasks.json` when a task status changes.
+5. Compact or archive superseded state when an update would otherwise keep
+   growing inactive context.
 
 Do not claim a paper, citation, result, or benchmark exists unless it is backed
 by a source, file, log, or user-provided evidence.
