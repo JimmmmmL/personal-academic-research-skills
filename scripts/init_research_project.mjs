@@ -193,13 +193,14 @@ Use the personal academic research harness. On startup, read .pipeline/docs/rese
 Preferred routing:
 - Literature search: paper-finder
 - Paper notes: paper-note
-- Gap / idea analysis: research-gap-finder
-- Experiment summary: experiment-log-summarizer
 - Memory compaction: compact-research-project
-- Paper writing: paper-writing
 - Figures: academic-plotting
 - Peer review: paper-reviewer
 - Rebuttal: review-rebuttal
+
+Perform idea analysis, experiment synthesis, benchmark extraction, surveys,
+and paper drafting directly from the mapped project evidence. This suite does
+not install dedicated skills for those tasks.
 
 Do not fabricate citations, experiment results, benchmark numbers, or venue rules.
 

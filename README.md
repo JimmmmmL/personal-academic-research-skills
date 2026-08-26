@@ -1,8 +1,7 @@
 # Personal Academic Research Skills
 
 Codex skills for academic research projects: literature search, paper reading,
-gap analysis, experiment tracking, paper writing, figure generation, review, and
-rebuttal drafting.
+project memory, figure generation, review, and rebuttal drafting.
 
 This repo is designed for lab use. It keeps the useful parts of several research
 skill collections, but avoids merging everything into one large prompt. The main
@@ -13,11 +12,10 @@ the specialized skill or reference file needed for the current task.
 
 - Oh-my-paper style project memory: `.pipeline/`, staged research workflow,
   task state, literature bank, experiment ledger, review log, and handoff notes.
-- Personal lightweight research skills: paper finding, concise paper notes, gap
-  analysis, benchmark extraction, experiment summaries, surveys, and rebuttals.
-- Selected AI-Research-SKILLs writing components: ML paper writing, systems
-  paper writing, and academic plotting, with long guidance moved behind
-  references.
+- Personal lightweight research skills: paper finding, concise paper notes,
+  project-memory compaction, reviewer simulation, and rebuttals.
+- A focused academic plotting skill with reproducible numerical plots,
+  editable-first diagrams, reference-guided planning, and visual QA.
 
 ARS-style academic-paper drafting is not the default path here. Use
 `paper-reviewer` for strict reviewer simulation and `review-rebuttal` for
@@ -31,11 +29,10 @@ personal-academic-research-skills/
 │   ├── academic-research-harness/   # project router and .pipeline protocol
 │   ├── compact-research-project/    # archive stale state and compact hot memory
 │   ├── paper-finder/                # multi-angle paper discovery
-│   ├── paper-writing/               # ML/AI paper drafting and citation checks
 │   ├── academic-plotting/           # Figure 1, architecture diagrams, plots
-│   ├── systems-paper-writing/       # OSDI/SOSP/ASPLOS/NSDI/EuroSys writing
+│   ├── paper-note/                  # concise notes for individual papers
 │   ├── paper-reviewer/              # harsh pre-submission review
-│   └── ...                          # focused reading, gap, survey, rebuttal skills
+│   └── review-rebuttal/             # evidence-grounded rebuttal drafting
 ├── scripts/
 │   ├── init_research_project.mjs
 │   ├── session_context.mjs
@@ -121,16 +118,15 @@ recursively opening deep folders. Historical state lives under
 | Start or resume a research project | `academic-research-harness` |
 | Find papers / related work | `paper-finder` |
 | Make a concise note for one paper | `paper-note` |
-| Analyze gaps or refine ideas | `research-gap-finder` |
-| Extract benchmark tables | `benchmark-extractor` |
-| Summarize experiment logs | `experiment-log-summarizer` |
 | Archive stale state / compact context | `compact-research-project` |
-| Write Chinese survey / related work | `survey-writer` |
-| Write ML/AI paper sections | `paper-writing` |
-| Write systems papers | `systems-paper-writing` |
 | Create figures and plots | `academic-plotting` |
 | Simulate reviewer feedback | `paper-reviewer` |
 | Draft rebuttal | `review-rebuttal` |
+
+Gap analysis, experiment synthesis, benchmark extraction, surveys, and paper
+drafting remain normal research tasks, but this suite no longer installs thin
+single-purpose skills for them. Handle them directly from the project evidence
+or add a focused skill later if repeated use demonstrates a concrete need.
 
 ## Installation
 
@@ -240,25 +236,23 @@ Ask for related work or paper search. `paper-finder` will:
 - create or update topic-specific folders under `literature/<topic-name>/`;
 - update `references.bib` when citation material is verified.
 
-### 2. Paper Reading And Gap Analysis
+### 2. Paper Reading And Idea Analysis
 
-Use `paper-note` for concise single-paper notes. Use
-`research-gap-finder` after enough papers are collected. The intended flow is:
+Use `paper-note` for concise single-paper notes. Once enough evidence is
+collected, analyze candidate directions directly from the paper bank, notes,
+and literature memory. The intended evidence flow is:
 
 ```text
-paper-finder -> paper-note -> research-gap-finder -> decision_log
+paper-finder -> paper-note -> evidence comparison -> decision_log
 ```
 
 The goal is to distinguish real gaps from gaps caused by incomplete reading.
 Paper notes are synchronized to `.pipeline/docs/paper_notes.md`; the same
 paper's machine-readable status and short insight summary are merged into
 `.pipeline/docs/paper_bank.json`.
-`research-gap-finder` then uses these files as evidence to summarize the
-landscape, propose 2-4 candidate directions, flag missing evidence, and ask the
-user whether to choose a direction, combine directions, or run `paper-finder`
-for targeted follow-up. After user selection, it writes the result to
-`.pipeline/docs/selected_idea.md`, `.pipeline/docs/gap_matrix.md`, and
-`.pipeline/memory/decision_log.md`.
+Use `paper-finder` for targeted follow-up whenever a claimed gap lacks evidence.
+After user selection, record the result in `.pipeline/docs/selected_idea.md`,
+`.pipeline/docs/gap_matrix.md`, and `.pipeline/memory/decision_log.md`.
 
 ### 3. Experiments
 
@@ -276,7 +270,7 @@ Then record meaningful runs in `.pipeline/memory/experiment_ledger.md`. Each
 entry should include the code path, revision, config, metric, result, and any
 lightweight artifact saved under `results/`.
 
-When logs become messy, use `experiment-log-summarizer` to produce:
+When logs become messy, synthesize them directly into:
 
 - confirmed results;
 - possible explanations marked as hypotheses;
@@ -309,7 +303,7 @@ detail is needed.
 
 ### 5. Paper Writing
 
-For ML/AI papers, use `paper-writing`. It follows this order:
+Draft from confirmed project evidence in this order when it fits the paper:
 
 ```text
 one-sentence contribution
@@ -322,21 +316,31 @@ one-sentence contribution
 -> limitations / checklist / citation audit
 ```
 
-Citation rule: never write BibTeX from memory. Use `paper-finder` or
-`paper-writing/references/citation-workflow.md` to verify citations. Unverified
-citations should be explicit placeholders.
-
-For systems venues, use `systems-paper-writing` instead.
+Citation rule: never write BibTeX from memory. Use `paper-finder` or an
+authoritative source to verify citations. Unverified citations should be
+explicit placeholders. Venue-specific drafting does not have a dedicated skill
+in this suite.
 
 ### 6. Figures
 
 Use `academic-plotting`:
 
-- architecture, method overview, workflow diagrams: diagram mode;
-- ablations, benchmark comparisons, training curves: data plot mode.
+- architecture, method overview, workflow diagrams: editable-first diagram
+  mode with reference-guided planning and visual critique;
+- ablations, benchmark comparisons, training curves: reproducible data-plot
+  mode with source data, vector export, and final-size QA.
 
 Numerical plots should be generated from saved data or logs, not invented from
 paper prose.
+
+The current workflow incorporates the reference-planning-critique loop from
+[PaperVizAgent](https://github.com/google-research/papervizagent), the
+editable-SVG direction from
+[AutoFigure-Edit](https://github.com/ResearAI/AutoFigure-Edit), and optionally
+[SciencePlots](https://github.com/garrettj403/SciencePlots) as a Matplotlib
+style baseline. See
+[`skills/academic-plotting/references/tooling.md`](skills/academic-plotting/references/tooling.md)
+for selection criteria and limitations.
 
 ### 7. Review And Rebuttal
 
@@ -380,9 +384,8 @@ skill. Examples:
 - RAG / vector databases: `AI-Research-SKILLs/15-rag/*/SKILL.md`
 - evaluation harnesses: `AI-Research-SKILLs/11-evaluation/*/SKILL.md`
 
-The paper-writing, systems-writing, and academic-plotting pieces used most often
-for academic output have already been compressed into this repo, so users do not
-need to load the whole upstream library for normal writing tasks.
+Academic plotting is maintained locally. Other writing or implementation
+guidance should be loaded only when a concrete task needs it.
 
 ## Maintaining The Repo
 

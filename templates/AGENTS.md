@@ -80,11 +80,11 @@ rules. Mark unverified items explicitly.
 
 - Papers and related work: `paper-finder`
 - Single-paper note: `paper-note`
-- Gap and idea analysis: `research-gap-finder`
-- Experiment logs: `experiment-log-summarizer`
 - Memory compaction: `compact-research-project`
-- ML paper drafting: `paper-writing`
-- Related work / Chinese survey: `survey-writer`
 - Figures and plots: `academic-plotting`
 - Peer review: `paper-reviewer`
 - Rebuttal: `review-rebuttal`
+
+Perform idea analysis, experiment synthesis, benchmark extraction, surveys,
+and drafting directly from the mapped project evidence; there is no dedicated
+skill for those tasks in this suite.

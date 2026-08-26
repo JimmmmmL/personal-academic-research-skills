@@ -1,65 +1,91 @@
 ---
 name: academic-plotting
-description: Create publication-quality figures for ML/AI papers from paper context, method descriptions, experiment tables, CSV/JSON results, or training logs. Use for Figure 1, architecture diagrams, method overviews, ablation plots, training curves, benchmark comparisons, and LaTeX-ready figure outputs.
+description: Create publication-ready figures for research papers from method text, experiment data, tables, or logs. Use for editable architecture and pipeline diagrams, Figure 1 overviews, ablations, training curves, benchmark comparisons, and LaTeX-ready visual assets; do not use it to invent results or decorate unsupported claims.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   derived_from: "AI-Research-SKILLs/20-ml-paper-writing/academic-plotting"
 ---
 
 # Academic Plotting
 
-Generate figures for papers while keeping numerical plots reproducible and
-diagram prompts grounded in the paper text.
+Create a truthful, editable, reproducible figure bundle—not merely an attractive
+preview. Optimize for the figure's communicative job at its final printed size.
 
-## Choose The Workflow
+## Route The Figure
 
-| Figure type | Workflow | Read |
+| Figure | Primary representation | Read |
 |---|---|---|
-| Architecture, system diagram, pipeline, Figure 1 overview | Diagram | `references/diagram-generation.md`, `references/style-guide.md` |
-| Bar chart, line chart, scatter, heatmap, ablation, training curve | Data plot | `references/data-visualization.md`, `references/style-guide.md` |
+| Numerical axes, measured values, uncertainty | Python source plus PDF/SVG | `references/data-visualization.md`, `references/style-guide.md` |
+| Architecture, method, workflow, system overview | Editable SVG or TikZ plus preview | `references/diagram-generation.md`, `references/style-guide.md` |
+| Composite with plots and conceptual panels | Build panels in their native representations, then compose as vector | all three references |
 
-If the figure has numerical axes, use matplotlib/seaborn. If it has boxes,
-arrows, and components, use diagram mode.
+Read `references/tooling.md` only when choosing or installing an optional
+external renderer. Do not install packages, clone repositories, or call a paid
+API without the authority normally required for those actions.
 
-## Grounding Rules
+## Ground The Content
 
-- Extract labels, modules, and claims from the user's text or project files.
-- Do not invent components or numbers.
-- For result figures, save the raw data or cite the file it came from.
-- Use colorblind-safe palettes for quantitative plots.
-- Captions must state the takeaway and be understandable without the main text.
+Before rendering, extract a figure brief:
 
-## Default Output Locations
+- communicative intent: the one sentence the reader should learn;
+- evidence: exact data files, method text, labels, modules, and relationships;
+- required visual elements and elements explicitly out of scope;
+- target venue/template, column width, and expected output formats;
+- uncertainty: anything that needs user confirmation rather than invention.
 
-Use the first matching directory:
+Never infer missing metric values, error bars, module names, causal arrows, or
+performance claims. Preserve raw measurements; compute derived values in the
+generation script and document the computation.
 
-- `paper/figures/`
-- `figures/`
-- `assets/figures/`
+## Reference-Guided Planning
 
-Also save generation scripts when creating data plots, so figures can be
-regenerated.
+When the user supplies references, or when browsing is appropriate and
+available, inspect a small set of structurally relevant figures. Learn their
+layout grammar, information density, typography, and use of emphasis. Do not
+copy distinctive artwork or transfer scientific content from a reference.
 
-## Diagram Mode
+Convert the brief into a semantic spec before rendering:
 
-1. Read the method/abstract/overview text.
-2. Extract entities, relationships, and data flow.
-3. Choose a layout: pipeline, layered architecture, hub-and-spoke, or hierarchy.
-4. Choose one visual style from `references/style-guide.md`.
-5. Produce a detailed prompt or editable diagram spec.
+1. content hierarchy and reading order;
+2. nodes/panels and exact labels;
+3. edges, direction, meaning, and line convention;
+4. grouping, alignment, and approximate proportions;
+5. semantic emphasis and restrained palette;
+6. caption takeaway.
 
-If an image-generation API key is unavailable, produce a precise diagram spec
-that can be implemented later.
+This planning and critique loop is adapted from PaperVizAgent; editable-first
+output is adapted from AutoFigure-Edit. The optional integrations and their
+tradeoffs are documented in `references/tooling.md`.
 
-## Data Plot Mode
+## Render, Inspect, Refine
 
-1. Read the data table, CSV, JSON, logs, or result summary.
-2. Identify methods, metrics, benchmarks, and whether values are means or runs.
-3. Choose chart type:
-   - time/step axis: line plot
-   - methods x benchmarks: grouped bar
-   - ranking: horizontal bar
-   - continuous relation: scatter
-   - matrix: heatmap
-4. Generate a script and figure.
-5. Include uncertainty/error bars when the data provides multiple runs.
+Render a draft, then inspect the actual output rather than trusting source code
+or a generation prompt. Use an image-viewing or PDF-rendering tool when
+available. Revise only issues visible in the artifact or violations of the
+semantic spec.
+
+The final review must cover:
+
+- content fidelity: numbers, labels, arrows, ordering, and claims;
+- readability at final column width, including at least 7 pt effective text;
+- visual hierarchy and absence of collisions, clipping, or unnecessary ink;
+- accessibility in grayscale and under common color-vision deficiencies;
+- consistency with the rest of the paper;
+- editability/reproducibility and successful clean regeneration.
+
+Stop when the artifact passes the checks. Do not run an arbitrary number of
+self-critique rounds.
+
+## Deliverables
+
+Use the first existing output directory among `paper/figures/`, `figures/`, and
+`assets/figures/`; otherwise create `figures/`. Keep related files together:
+
+- vector publication asset: PDF or SVG;
+- editable source: Python, SVG, TikZ, or composition source;
+- PNG preview for quick inspection;
+- source data or a stable pointer to it for numerical figures;
+- concise caption draft and regeneration command.
+
+If only a raster conceptual draft is possible, label it as a draft and retain
+the semantic spec needed to reconstruct an editable final figure.

@@ -57,12 +57,10 @@ Do not hard-code machine-specific absolute paths in this repo.
 
 ## What Is Already Integrated
 
-This repo already includes compressed versions of the upstream writing-related
-skills most useful for academic output:
+This repo keeps a substantially revised local academic-plotting workflow:
 
-- `20-ml-paper-writing/ml-paper-writing` -> `skills/paper-writing`
 - `20-ml-paper-writing/academic-plotting` -> `skills/academic-plotting`
-- `20-ml-paper-writing/systems-paper-writing` -> `skills/systems-paper-writing`
 
-For normal paper drafting, figure generation, and reviewer simulation, use the
-local skills first.
+The suite deliberately does not vendor dedicated ML-paper-writing or
+systems-paper-writing skills. Load external writing guidance only for a
+concrete task that benefits from it.

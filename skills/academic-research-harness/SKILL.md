@@ -1,6 +1,6 @@
 ---
 name: academic-research-harness
-description: Personal academic research project harness for Codex. Use when starting or resuming a research project, coordinating literature search, paper notes, gap analysis, experiments, memory compaction, paper writing, review, or rebuttal through a .pipeline memory structure. Routes to focused research skills instead of doing every task inline.
+description: Personal academic research project harness for Codex. Use when starting or resuming a research project and coordinating literature, experiments, figures, writing, review, or rebuttal through a .pipeline memory structure. Routes to a focused skill when one exists and otherwise works directly from project evidence.
 metadata:
   version: "0.1.0"
 ---
@@ -9,13 +9,13 @@ metadata:
 
 This is the project-level router and memory protocol for personal academic
 research. It keeps long-running research coherent through `.pipeline/` state and
-delegates phase work to focused skills.
+routes phase work to focused skills only when they add demonstrated value.
 
 ## First Rule
 
 Do not load every related skill. Identify the user's current intent, inspect
-only the required `.pipeline` memory files, then invoke/read the one focused
-skill needed for the next action.
+only the required `.pipeline` memory files, then use one focused skill when the
+router lists one. Otherwise perform the task directly from project evidence.
 
 ## Project Detection
 
@@ -37,11 +37,10 @@ adapt `scripts/init_research_project.mjs`.
 | Start a new research project | `scripts/init_research_project.mjs` | `.pipeline/docs/research_brief.json`, `AGENTS.md` |
 | Find papers, related work, source discovery | `paper-finder` | `literature_bank.md`, `paper_bank.json`, `references.bib` |
 | Make a concise note for one paper | `paper-note` | `.pipeline/docs/paper_notes.md`, `paper_bank.json`, `literature_bank.md` |
-| Analyze gap, decide idea, test novelty | `research-gap-finder` | `.pipeline/docs/gap_matrix.md`, `.pipeline/docs/selected_idea.md`, `decision_log.md`, `agent_handoff.md` |
-| Summarize experiment logs or workspace results | `experiment-log-summarizer` | `experiment_ledger.md`, `result_summary.md`, `experiment_map.md`, `results/` |
+| Analyze gap, decide idea, test novelty | Work directly from `paper-note` outputs; use `paper-finder` for missing evidence | `.pipeline/docs/gap_matrix.md`, `.pipeline/docs/selected_idea.md`, `decision_log.md`, `agent_handoff.md` |
+| Summarize experiment logs or workspace results | Work directly from mapped runs and artifacts | `experiment_ledger.md`, `result_summary.md`, `experiment_map.md`, `results/` |
 | Compact stale or oversized project memory | `compact-research-project` | `.pipeline/archive/`, compact canonical memory files |
-| Write ML/AI paper sections | `paper-writing` | `paper/` or `sections/`, `result_summary.md` |
-| Write Chinese survey / related work draft | `survey-writer` | `paper/related_work.*` or `.pipeline/docs/survey.md` |
+| Write paper sections, survey, or related work | Work directly from verified project evidence and venue instructions | `paper/` or `sections/`, `result_summary.md` |
 | Create Figure 1, architecture diagrams, plots | `academic-plotting` | `figures/`, `paper/figures/`, or `assets/figures/` |
 | Simulate peer review | `paper-reviewer` | `review_log.md` |
 | Draft rebuttal from reviewer comments | `review-rebuttal` | `.pipeline/docs/rebuttal_draft.md` |
@@ -137,9 +136,9 @@ Use these modes as lightweight behavior frames, not separate agents:
 
 - `Conductor`: plan next action, update tasks, judge phase transitions.
 - `Literature Scout`: run `paper-finder`, screen relevance, update literature memory.
-- `Idea Analyst`: run `paper-note` and `research-gap-finder`.
+- `Idea Analyst`: use `paper-note`; compare evidence directly and run targeted `paper-finder` searches for unresolved claims.
 - `Experiment Driver`: design, run, and summarize experiments; update ledger.
-- `Paper Writer`: write sections using `paper-writing`, `survey-writer`, and `academic-plotting`.
+- `Paper Writer`: draft directly from verified evidence and use `academic-plotting` for figures.
 - `Reviewer`: run `paper-reviewer` or `review-rebuttal`.
 
 ## Update Protocol
@@ -160,8 +159,8 @@ by a source, file, log, or user-provided evidence.
 
 For paper writing, prefer this stack:
 
-1. Oh-my-paper style project state and staged writing flow from this harness.
-2. `paper-writing` for ML/AI narrative, sections, templates, and citations.
+1. Project state and verified evidence from this harness.
+2. Direct drafting against the user's venue template and instructions.
 3. `academic-plotting` for Figure 1 and result figures.
 4. `paper-reviewer` for harsh review.
 
